@@ -316,7 +316,7 @@ int main(){
     char number[len];
 
     InitVector(len_p, number);
-    printf("Digite um número até 999999,999999:\n");
+    printf("Digite um número entre -999,999 e 999999,999999:\n");
     GetString(number);
     int *len2_p;
     int len2 = GetLenghtString(number);
