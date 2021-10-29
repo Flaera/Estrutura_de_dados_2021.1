@@ -67,8 +67,8 @@ int GetLenghtString(char vector[]){
 
 
 void PrintUnits(char a){
-    if (a=='0'){printf("ZERO");}
-    else if (a=='1'){printf("UM");}
+    //if (a=='0'){printf("ZERO");}
+    if (a=='1'){printf("UM");}
     else if (a=='2'){printf("DOIS");}
     else if (a=='3'){printf("TRÊS");}
     else if (a=='4'){printf("QUATRO");}
@@ -123,6 +123,65 @@ void PrintCent(char a){
 }
 
 
+void PrintMilhar(char a){
+    if (a==2){printf("MIL");}
+    else if (a==3){printf("MILHÕES");}
+    else if (a==4){printf("BILHÕES");}
+    else if (a==5){printf("TRILHÕES");}
+    else if (a==6){printf("QUATRILHÕES");}
+    else if (a==7){printf("SEISTILHÕES");}
+    else if (a==8){printf("SETESSENTILHÕES");}
+    else if (a==9){printf("OITOSSENTILHÕES");}
+    else if (a==10){printf("NOVESSENTILHÕES");}
+    return;
+}
+
+
+int MultiSplit(int end, char vec2d[][4], int len_num, char num[]){
+    int acc = len_num-1;
+    int delta = 0;
+    for (int i=0; i<end; ++i){
+        try{
+            if ((num[acc]>=48) && (num[acc]<=57)){
+                vec2d[i][0] = num[acc];
+                delta += 1;
+                //vec2d[i][0+1] = 0;
+            }
+            else{throw 1;}
+            if ((num[acc-1]>=48) && (num[acc-1]<=57)){
+                vec2d[i][1] = num[acc-1];
+                delta += 1;
+                //vec2d[i][1+1] = 0;
+            }
+            else{throw 2;}
+            if ((num[acc-2]>=48) && (num[acc-2]<=57)){
+                vec2d[i][2] = num[acc-2];
+                delta += 1;
+                //vec2d[i][2+1] = 0;
+            }
+            else{throw 3;}
+        }
+        catch(int error){
+            if (error==1){
+                printf("Error space not in vector 2d-1\n");
+                vec2d[i][1] = 0;
+            }
+            else if (error==2){
+                printf("Error space not in vector 2d-2\n");
+                vec2d[i][2] = 0;
+            }
+            else if (error==3){
+                printf("Error space not in vector 2d-3\n");
+                vec2d[i][3] = 0;
+            }
+        }
+        //printf("delta:%d-i:%d-\n", delta, i);
+        acc -= delta;
+    }
+    return 0;
+}
+
+
 int WriteNumberExtended(int *len, char num[]){
     int delta = 0;
     if (num[0]=='-'){
@@ -130,15 +189,62 @@ int WriteNumberExtended(int *len, char num[]){
         delta = 1;
         printf("MENOS ");
     }
-    if (*len==3){
+    if (*len>=4){
+        int end = *len/3;
+        if (*len%3>0){
+            end += 1;
+        }
+        char vec2d[end][4];
+        MultiSplit(end, vec2d, *len, num);
+        DEBUG{
+            for (int i=0; i<end; ++i){
+                printf("parts:-%s-\n", vec2d[i]);
+            }
+        }
+        for (int j=end-1; j>=0; --j){
+            int len2 = GetLenghtString(vec2d[j]);
+            DEBUG{printf("len2:%d-j:%d-\n", len2, j);}
+            int acc = len2-1;
+            if ((len2==3)){
+                PrintCent(vec2d[j][acc+delta]);
+                if (vec2d[j][acc-1+delta]!='0'){printf(" E ");}
+                if (vec2d[j][acc-1+delta]=='1'){
+                    PrintDecimates(vec2d[j][acc-1+delta]);
+                }
+                else{
+                    PrintDezenas(vec2d[j][acc-1+delta]);
+                    if (vec2d[j][acc-1+delta]!='0'){printf(" E ");}
+                    PrintUnits(vec2d[j][acc-2+delta]);
+                }
+            }
+            else if ((len2==2) && (vec2d[j][acc]!='0')){
+                if (vec2d[j][acc+delta]=='1'){
+                    PrintDecimates(vec2d[j][acc+delta]);
+                }
+                else{
+                    PrintDezenas(vec2d[j][acc+delta]);
+                    printf(" E ");
+                    PrintUnits(vec2d[j][acc+1+delta]);
+                }
+            }
+            else if ((len2==1) && (vec2d[j][acc]!='0')){
+                PrintUnits(vec2d[j][acc+delta]);
+            }
+            printf(" ");
+            PrintMilhar(j+1);
+            printf(" ");
+            acc -= 1;
+        }
+    }
+    else if (*len==3){
         PrintCent(num[0+delta]);
-        printf(" E ");
+        if (num[1+delta]!='0'){printf(" E ");}
         if (num[1+delta]=='1'){
             PrintDecimates(num[2+delta]);
         }
         else{
             PrintDezenas(num[1+delta]);
-            printf(" E ");
+            if (num[1+delta]!='0'){printf(" E ");}
             PrintUnits(num[2+delta]);
         }
     }
@@ -148,7 +254,7 @@ int WriteNumberExtended(int *len, char num[]){
         }
         else{
             PrintDezenas(num[0+delta]);
-            printf(" E ");
+            if (num[1+delta]!='0'){printf(" E ");}
             PrintUnits(num[1+delta]);
         }
     }
@@ -210,12 +316,12 @@ int main(){
     char number[len];
 
     InitVector(len_p, number);
-    printf("Digite um número até 999,99:\n");
+    printf("Digite um número até 999999,999999:\n");
     GetString(number);
     int *len2_p;
     int len2 = GetLenghtString(number);
     len2_p = &len2;
-    DEBUG{printf("number:%s-\n", number);}
+    DEBUG{printf("number:%s-%d-\n", number, len2);}
 
     bool is_real = IsReal(len2_p, number);
     if (is_real==true){
