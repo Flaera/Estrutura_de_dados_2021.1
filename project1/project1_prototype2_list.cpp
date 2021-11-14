@@ -1,5 +1,9 @@
 #include <stdio.h>
 #define DEBUG if(1)
+#define LIST_FULL printf("List full.\n")
+#define LIST_EMPTY printf("List empty.\n")
+
+using namespace std;
 
 
 class List{
@@ -37,6 +41,37 @@ class List{
             return;          
         }
 
+        void Remove(){
+            if (curr_size!=0){
+                int after_elements[curr_size];
+                for (int i=curr+1; i<curr_size-curr; ++i){
+                    after_elements[i] = array[i+1]; 
+                }
+                for (int j=curr; j<curr_size-curr+1; ++j){
+                    array[j] = after_elements[j+1];
+                }
+                --curr_size;
+                --curr;
+            }
+            else{
+                array[curr] = -1;
+            }
+        }
+
+        int GetCurrent(){
+            //DEBUG{printf("curr:%d-\n", curr);}
+            return array[curr-1];
+        }
+
+        int SetCurrent(int index){
+            if (index<curr_size){
+                curr = index;
+                return array[curr];
+            }
+            printf("Index parameter most that current size list.\n");
+            return -1;
+        }
+
         void ShowAll(){
             printf("#####\n");
             for (int i=0; i<curr_size; ++i){
@@ -49,11 +84,17 @@ class List{
 
 
 int main(){
-    List list(10);
+    int len;
+    scanf("%d", &len);
+    getchar();
+    List list(len);
 
     list.Insert(11);
     list.Insert(456);
     list.Insert(2);
+    printf("GetCurrent:%d\n", list.GetCurrent());
+    printf("SetCurrent:%d\n", list.SetCurrent(0));
+    list.Remove();
 
     list.ShowAll();
 
