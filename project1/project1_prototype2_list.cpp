@@ -1,6 +1,8 @@
-#include <stdio.h>
+//#include <stdio.h>
+#include <iostream>
 #define DEBUG if(1)
 
+using namespace std;
 
 class List{
     private:
@@ -18,35 +20,25 @@ class List{
         }
         void Insert(int element){
             if (curr_size!=0){
-                int after_elements[curr_size+1];
-                for (int i=curr; i<curr_size-curr+1; ++i){
-                    after_elements[i+1] = array[i]; 
+                for (int j=curr_size; j>curr; j--){
+                    array[j] = array[j-1];
                 }
-                array[curr] = element;
-                ++curr;
-                for (int j=curr; j<curr_size-curr+1; ++j){
-                    array[j] = after_elements[j-1];
-                }
-                ++curr_size;
+                
             }
-            else{
-                array[curr] = element;
-                curr+=1;
-                curr_size+=1;
-            }
-            return;          
+            
+            array[curr] = element;
+            curr+=1;
+            curr_size+=1;        
         }
 
         void ShowAll(){
-            printf("#####\n");
+            cout << "#####" << endl;
             for (int i=0; i<curr_size; ++i){
-                printf("-%d-\n", array[i]);
+                cout << '-' << array[i] << '-' << endl;
             }
-            printf("#####\n");
-            return;
+            cout << "#####" << endl;
         }
 };
-
 
 int main(){
     List list(10);
