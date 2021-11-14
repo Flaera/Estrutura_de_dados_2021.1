@@ -1,8 +1,8 @@
 //#include <stdio.h>
 #include <iostream>
 #define DEBUG if(1)
-#define LIST_FULL printf("List full.\n")
-#define LIST_EMPTY printf("List empty.\n")
+#define LIST_FULL "List full.\n"
+#define LIST_EMPTY "List empty.\n"
 
 using namespace std;
 
@@ -13,41 +13,41 @@ class List{
         int curr;
         int curr_size;
         int *array;
+        int max_size;
     public:
         List(int max_size){
             curr = 0;
             curr_size = 0;
+            max_size = max_size;
             array = new int[max_size];
         }
         ~List(){
             delete array;
         }
         void Insert(int element){
-            if (curr_size!=0){
+            if ((curr_size!=0) && (curr_size<max_size)){
                 for (int j=curr_size; j>curr; j--){
                     array[j] = array[j-1];
                 }
-                
             }
+            //else if (curr_size<max_size){
+                //
+            //}
             
             array[curr] = element;
-            curr+=1;
+            //curr+=1;
             curr_size+=1;        
         }
 
         void Remove(){
             if (curr_size!=0){
-                int after_elements[curr_size];
-                for (int i=curr+1; i<curr_size-curr; ++i){
-                    after_elements[i] = array[i+1]; 
+                for (int i=curr; i<curr_size; ++i){
+                    array[i] = array[i+1];
                 }
-                for (int j=curr; j<curr_size-curr+1; ++j){
-                    array[j] = after_elements[j+1];
-                }
-                --curr_size;
-                --curr;
+                curr_size--;
             }
             else{
+                cout << LIST_EMPTY;
                 array[curr] = -1;
             }
         }
@@ -62,7 +62,7 @@ class List{
                 curr = index;
                 return array[curr];
             }
-            printf("Index parameter most that current size list.\n");
+            cout << "Index parameter most that current size list.\n";
             return -1;
         }
 
@@ -77,15 +77,17 @@ class List{
 
 int main(){
     int len;
-    scanf("%d", &len);
-    getchar();
+    cin >> len;
     List list(len);
 
     list.Insert(11);
     list.Insert(456);
     list.Insert(2);
-    printf("GetCurrent:%d\n", list.GetCurrent());
-    printf("SetCurrent:%d\n", list.SetCurrent(0));
+    list.Insert(4);
+    cout << "GetCurrent: " << list.GetCurrent() << endl;
+    cout << "SetCurrent: " << list.SetCurrent(1) << endl;
+    list.Remove();
+    list.Remove();
     list.Remove();
 
     list.ShowAll();
