@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <iostream>
-#define DEBUG if(1)
+#define DEBUG if(0)
 #define LIST_FULL "List full.\n"
 #define LIST_EMPTY "List empty.\n"
 
@@ -34,15 +34,36 @@ class List{
             else if (curr_size>=max_size-1){
                 DEBUG{cout<<"AQUImax_size2: " << max_size << endl;}
                 cout << LIST_FULL;
-                array = new int[2*max_size]; //It can generated out of memory
-                for (int j=curr_size; j>curr; j--){
-                    array[j] = array[j-1];
+                //Copying array:
+                int array_copy[max_size+1];
+                for (int i=0; i<curr; ++i){
+                    array_copy[i] = array[i];
                 }
+                array_copy[curr] = element;
+                curr_size+=1;
+                for (int j=curr+1; j<curr_size; ++j){
+                    array_copy[j] = array[j-1];
+                }
+                DEBUG{
+                    for (int l=0; l<curr_size; ++l){
+                        cout << "-" << array_copy[l] << "-" << endl;
+                    }
+                }
+                //Creating new array
+                delete[] array;
+                max_size = 2*max_size;
+                array = new int[max_size]; //It can generated out of memory
+                for (int k=0; k<curr_size; ++k){
+                    array[k] = array_copy[k];
+                }
+                cout << "Array doubled." << endl;
+                return;
             }
             
             array[curr] = element;
             //curr+=1;
             curr_size+=1;        
+            return;
         }
 
         void Remove(){
@@ -89,7 +110,8 @@ int ShowMenu(){
     //2 get current
     //3 set  current
     //4 for remove
-    //5 exit
+    //5 show all
+    //6 exit
     cout << "1 - insert one element in current position.\n";
     cout << "2 - get current element.\n";
     cout << "3 - set current element.\n";
