@@ -1,0 +1,11 @@
+Implementar 
+    append();           
+    moveToStart();      //feito
+    moveToEnd();        //feito
+    prev();             //feito
+    next();             //feito
+    length();           //feito
+    maxSize();          //feito
+    currentPosition();  //feito
+    clear();            //feito
+    find();             //feito
