@@ -14,7 +14,7 @@ class List{
         int *array;
     public:
         List(int max_size2){
-            curr = 1;
+            curr = 0;
             curr_size = 0;
             max_size = initMaxSize = max_size2;
             array = new int[max_size];
@@ -25,24 +25,22 @@ class List{
         void Insert(int element){
             if ((curr_size!=0) && (curr_size<max_size)){
                 DEBUG{cout<<"AQUImax_size1: " << max_size << endl;}
-                for (int j=curr_size; j>curr; j--){
+                for (int j=curr_size; j>=curr; j--){
                     array[j] = array[j-1];
                 }
             }
             else if (curr_size>=max_size-1){
-                doubleList();
-                cout << curr << endl;
-                array[curr-1] = element;
+                doubleList(element);
                 return;
             }
             
-            array[curr-1] = element;
+            array[curr] = element;
             //curr+=1;
             curr_size+=1;        
             return;
         }
 
-        void doubleList(){
+        void doubleList(int element){
             DEBUG{cout<<"AQUImax_size2: " << max_size << endl;}
             cout << LIST_FULL;
             //Copying array:
@@ -50,7 +48,7 @@ class List{
             for (int i=0; i<curr; ++i){
                array_copy[i] = array[i];
             }
-            //array_copy[curr] = element;
+            array_copy[curr] = element;
             curr_size+=1;
             for (int j=curr+1; j<curr_size; ++j){
                 array_copy[j] = array[j-1];
@@ -77,7 +75,7 @@ class List{
                     array[i] = array[i+1];
                 }
                 curr_size--;
-                cout << "Element in current position was removed\n";
+                cout << "Element in current position was removed.\n";
             }
             else{
                 cout << LIST_EMPTY;
@@ -90,15 +88,15 @@ class List{
             if(curr_size == 0)
                 return -1;
             
-            return array[curr-1];
+            return array[curr];
             //DEBUG{printf("curr:%d-\n", curr);}
         }
 
         int SetCurrent(int index){
-            if (index<curr_size && index > 0){
+            if ((index<curr_size) && (index >= 0)){
                 curr = index;
-                cout << "Setting for current element: " << array[curr - 1] << endl;
-                return array[curr - 1];
+                cout << "Setting for current element: " << array[curr] << endl;
+                return array[curr];
             }
             cout << "Index parameter most that current size list." << endl;
             return -1;
@@ -118,7 +116,7 @@ class List{
         }
 
         void nextPos(){
-            if(curr == curr_size + 1)
+            if(curr == curr_size)
                 cout << "No more positions ahead! Already at the end of the list." << endl << endl;
             else{
                 curr += 1;
@@ -127,7 +125,7 @@ class List{
         }
 
         void prevPos(){
-            if(curr == 1)
+            if(curr == 0)
                 cout << "No more positions behind! Already at the beginning of the list." << endl << endl;
             else{
                 curr -= 1;
@@ -139,23 +137,23 @@ class List{
             if (curr == 1)
                 cout << "Already at the beginning of the list." << endl << endl;
             else{
-                curr = 1;
+                curr = 0;
                 cout << "Moved to the first position on the list." << endl << endl;
             }
         }
 
         void moveToEnd(){
-            if (curr == curr_size + 1)
+            if (curr == curr_size)
                 cout << "Already at the end of the list." << endl << endl;
             else{
-                curr = curr_size + 1;
+                curr = curr_size;
                 cout << "Moved to the last occupied position on the list." << endl << endl;
             }
         }
 
         void clear(){
             delete array;
-            curr = 1;
+            curr = 0;
             curr_size = 0;
             max_size = initMaxSize;
             array = new int[initMaxSize];
@@ -164,7 +162,7 @@ class List{
         int find(int value){
             for(int i = 0; i < curr_size; i++){
                 if(value == array[i]){
-                    cout << "The element " << value << " is in position " << i+1 << "." << endl << endl;
+                    cout << "The element " << value << " is in position " << i << "." << endl << endl;
                     return 0;
                 }
             }
@@ -174,10 +172,35 @@ class List{
             return 0;
         }
 
+        void doubleListAppend(int element){
+            DEBUG{cout<<"AQUImax_size2: " << max_size << endl;}
+            cout << LIST_FULL;
+            //Copying array:
+            int array_copy[max_size + 1];
+            for (int i=0; i<curr_size; ++i){
+               array_copy[i] = array[i];
+            }
+            curr_size+=1;
+            array_copy[curr_size-1] = element;
+            DEBUG{
+                for (int l=0; l<curr_size; ++l){
+                    cout << "-" << array_copy[l] << "-" << endl;
+                }
+            }
+            //Creating new array
+            delete[] array;
+            max_size = 2*max_size;
+            array = new int[max_size]; //It can generated out of memory
+            for (int k=0; k<curr_size; ++k){
+                array[k] = array_copy[k];
+            }
+            cout << "Array doubled." << endl << endl;
+            return;
+        }
+
         void append(int value){
             if(curr_size == max_size){
-                doubleList();
-                array[(max_size / 2)] = value;
+                doubleListAppend(value);
             }else{
                 array[curr_size] = value;
                 curr_size += 1;
@@ -210,7 +233,7 @@ int ShowMenu(){
     cout << "5 - Show all elements." << endl;
     cout << "6 - Show how many elements the list has at the moment." << endl;
     cout << "7 - Show the actual maximum size of the list." << endl;
-    cout << "8 - Get current postion in the list." << endl;
+    cout << "8 - Get current position in the list." << endl;
     cout << "9 - Set position to next position." << endl;
     cout << "10 - Set position to previous position." << endl;
     cout << "11 - Set position to start of the list." << endl;
@@ -305,7 +328,7 @@ int main(){
             int value;
             cout << "Insert the value you wanna append: ";
             cin >> value;
-            getchar();
+            //getchar();
             cout << endl;
             list.append(value);
         }
