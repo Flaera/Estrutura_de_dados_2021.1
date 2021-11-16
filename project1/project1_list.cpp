@@ -226,6 +226,15 @@ int ShowMenu(){
     //6 length
     //7 maxSize
     //10 exit
+    char title[] = "List of the Numbers Integers\0"; //28
+    int len = 0;
+    while (title[len]!=0){len++;}
+    for (int i=0; i<len; ++i){cout<<'-';}
+    cout << endl;
+    cout << title << endl;
+    for (int j=0; j<len; ++j){cout<<'-';}
+    cout << endl;
+    
     cout << "1 - Insert one element in current position." << endl;
     cout << "2 - Get current element." << endl;
     cout << "3 - Set current element." << endl;
@@ -279,12 +288,14 @@ int main(){
     List list(len);
     while (exit==false){
         int opt = ShowMenu();
+        DEBUG{cout << "opt= " << opt << endl;}
         if (opt==16){return 0;}
         else if (opt==1){
             cout << "Digit one number to inserted: ";
             int element;
             cin >> element;
-            getchar();
+            getchar();     
+            DEBUG{cout << "element: " << element << endl;}
             list.Insert(element);
             cout << endl;
         }
