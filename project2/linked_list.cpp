@@ -1,6 +1,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
+#define DEBUG if(0)
 
 using namespace std;
 
@@ -21,7 +22,7 @@ public:
 
     virtual int maxSize() = 0;
     */
-    virtual void remove() = 0;
+    virtual bool remove(int elem) = 0;
 
     virtual void getCurrentElem() = 0;
 
@@ -84,9 +85,21 @@ template <typename T> class LinkedList : public List<T>{
             clear();
         }
 
+        //insert in initial
         void insert(const T& it){
-            curr -> next = new Link<T>(it, curr -> next);
-            if(tail == curr) tail = curr -> next;
+            if (count==0){
+                DEBUG{cout << "AQUI-1\n";}
+                curr = head = tail = new Link<T>(it, NULL);
+                //curr->element = head->element = tail->element = it;
+                DEBUG{cout<<"Value1:"<<curr->element<<endl;}
+            }
+            else{
+                DEBUG{cout << "AQUI-2\n";}
+                Link<T> *aux = curr;
+                curr = head = new Link<T>(it, curr->next);
+                DEBUG{cout<<"Value2:"<<curr->element<<endl;}
+                curr -> next = aux;
+            }
             count++;
         }
 
@@ -95,8 +108,34 @@ template <typename T> class LinkedList : public List<T>{
             count++;
         }
 
-        void remove(){
-            if (count>0){
+        bool remove(int elem){
+            if (tail!=head){
+                //cout << "AQUI1" << endl;
+                while (curr->next!=NULL){
+                    //cout << curr->next << endl;
+                    if (elem==(curr->next)->element){
+                        //remove
+                        curr->next = (curr->next)->next;
+                    }
+                    curr = curr->next;
+                }
+                curr = head;
+                //cout << elem;
+                count--;
+                return true;
+            }
+            else if ((tail==head) && (tail->element==elem)){
+                //cout << "AQUI2" << endl;
+                curr = tail;
+                curr->element = 0;
+                curr->next = NULL;
+                //cout << elem;
+                count--;
+                return true;
+            }
+            cout << "Element not found.";
+            return false;
+                /*
                 T it = curr -> element;
                 Link<T>* ltemp = curr;
                 if(tail == curr -> next) {
@@ -109,7 +148,7 @@ template <typename T> class LinkedList : public List<T>{
                 delete ltemp;
                 count--;
                 cout << it;
-            }
+                */
         }
 
         void moveToStart(){
@@ -160,10 +199,12 @@ template <typename T> class LinkedList : public List<T>{
 
         void showAll(){
             cout << "##########\n";
-            for(int i = 0; i!=count; ++i ){
+            curr = head;
+            while(curr->next!=NULL){
                 cout << "-" << curr->element << "-" << endl;
                 curr = curr->next;
             }
+            curr = head;
             cout << "##########\n";
             return;
         }
@@ -222,6 +263,7 @@ int ShowMenu(){
     else if (opt==12){return 12;}
     else if (opt==13){return 13;}
     else if (opt==14){return 14;}
+    else if (opt==15){return 15;}
     else{return ShowMenu();}
 }
 
@@ -232,6 +274,7 @@ int main (){
     cin >> tamanho;
     getchar();
     LinkedList<int> aLista(tamanho);
+    aLista.insert(10);
 
     while (tamanho>0){
         int opt = ShowMenu();
@@ -252,9 +295,16 @@ int main (){
             cout << "Element " << elem << " appended." << endl;
         }
         else if (opt==3){
-            cout << "Element ";
-            aLista.remove();
-            cout << " removed." << endl;
+            int elem;
+            cout << "Digit one element to remove: ";
+            cin >> elem;
+            getchar();
+            bool status = aLista.remove(elem);
+            if (status==true){
+                cout << "Element ";
+                cout << elem;
+                cout << " removed." << endl;
+            }
         }
         else if (opt==4){
             aLista.moveToStart();
