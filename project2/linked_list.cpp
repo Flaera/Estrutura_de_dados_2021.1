@@ -63,7 +63,7 @@ template <typename T> class LinkedList : public List<T>{
         Link<T>* head;
         Link<T>* tail;
         Link<T>* curr;
-        int count;
+        int count, max_size;
 
         void init(){
             curr = tail = head = new Link<T>;
@@ -80,7 +80,7 @@ template <typename T> class LinkedList : public List<T>{
             count=0;
         }
         LinkedList(int size){
-            int max_size = size;
+            max_size = size;
             init();
         }
         ~LinkedList(){ 
@@ -88,7 +88,14 @@ template <typename T> class LinkedList : public List<T>{
         }
 
         void arrayDoubled(){
-            if (count==max_size){cout<<"Array doubled."<<endl;}
+            if (count==max_size){
+                cout<<"Array doubled."<<endl;
+                max_size *= 2;
+            }
+        }
+
+        void getMaxSize(){
+            cout << "The maximum size of the list is " << max_size << "." << endl;
         }
 
         //insert in initial
@@ -222,7 +229,8 @@ int ShowMenu(){
     cout << "Digit 12 to clear list." << endl;
     cout << "Digit 13 to find one element." << endl;
     cout << "Digit 14 to show all elements." << endl;
-    cout << "Digit 15 to exit the program." << endl;
+    cout << "Digit 15 to get the maximum size of the list." << endl;
+    cout << "Digit 16 to exit the program." << endl;
     int opt;
     cin >> opt;
     getchar();
@@ -241,6 +249,7 @@ int ShowMenu(){
     else if (opt==13){return 13;}
     else if (opt==14){return 14;}
     else if (opt==15){return 15;}
+    else if (opt==16){return 16;}
     else{return ShowMenu();}
 }
 
@@ -328,8 +337,10 @@ int main (){
         else if (opt==14){
             aLista.showAll();
         }
-        else if (opt==15) {return 0;}
-        //system("@clear||cls");
+        else if (opt==15) {
+            aLista.getMaxSize();
+        }
+        else if (opt==16) {return 0;}
     }
     // aLista.length();
     // aLista.insert(10);
