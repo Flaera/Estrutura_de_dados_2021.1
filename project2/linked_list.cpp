@@ -22,7 +22,7 @@ public:
 
     virtual int maxSize() = 0;
     */
-    virtual bool remove(int elem) = 0;
+    virtual void remove() = 0;
 
     virtual void getCurrentElem() = 0;
 
@@ -87,68 +87,26 @@ template <typename T> class LinkedList : public List<T>{
 
         //insert in initial
         void insert(const T& it){
-            if (count==0){
-                DEBUG{cout << "AQUI-1\n";}
-                curr = head = tail = new Link<T>(it, NULL);
-                //curr->element = head->element = tail->element = it;
-                DEBUG{cout<<"Value1:"<<curr->element<<endl;}
-            }
-            else{
-                DEBUG{cout << "AQUI-2\n";}
-                Link<T> *aux = curr;
-                curr = head = new Link<T>(it, curr->next);
-                DEBUG{cout<<"Value2:"<<curr->element<<endl;}
-                curr -> next = aux;
-            }
+            curr->next = new Link<T>(it, curr->next);
+            if (tail==curr){tail = curr->next;}
             count++;
         }
 
         void append(const T& it){
-            tail = tail -> next = new Link<T>(it, NULL);
+            tail = tail->next = new Link<T>(it, NULL);
             count++;
         }
 
-        bool remove(int elem){
-            if (tail!=head){
-                //cout << "AQUI1" << endl;
-                while (curr->next!=NULL){
-                    //cout << curr->next << endl;
-                    if (elem==(curr->next)->element){
-                        //remove
-                        curr->next = (curr->next)->next;
-                    }
-                    curr = curr->next;
-                }
-                curr = head;
-                //cout << elem;
-                count--;
-                return true;
+        void remove(){
+            Link<T>* ltemp = curr -> next;
+            if(tail == curr -> next) {
+                tail = curr;
             }
-            else if ((tail==head) && (tail->element==elem)){
-                //cout << "AQUI2" << endl;
-                curr = tail;
-                curr->element = 0;
-                curr->next = NULL;
-                //cout << elem;
-                count--;
-                return true;
-            }
-            cout << "Element not found.";
-            return false;
-                /*
-                T it = curr -> element;
-                Link<T>* ltemp = curr;
-                if(tail == curr -> next) {
-                    curr = tail;
-                    //tail = curr;
-                }
-                else{
-                    curr -> next = (curr -> next) -> next;
-                }
-                delete ltemp;
-                count--;
-                cout << it;
-                */
+            curr -> next = (curr -> next) -> next;
+            int it = (curr->next)->element;
+            delete ltemp;
+            count--;
+            cout << "Element " << it << " removed.";
         }
 
         void moveToStart(){
@@ -199,23 +157,27 @@ template <typename T> class LinkedList : public List<T>{
 
         void showAll(){
             cout << "##########\n";
+            Link<T> *tempCurr = curr;
             curr = head;
-            while(curr->next!=NULL){
-                cout << "-" << curr->element << "-" << endl;
+            for(int i=0; i<count; i++){
+                cout << "-" << (curr->next)->element << "-" << endl;
                 curr = curr->next;
             }
-            curr = head;
+            curr = tempCurr;
             cout << "##########\n";
             return;
         }
 
         bool find(const T& element){
+            Link<T> *ltemp_curr = curr;
             for(int i = 0; i!=count; ++i ){
-                curr = head->next;
+                curr = curr->next;
                 if (element==curr->element){
+                    curr = ltemp_curr;
                     return true;
                 }
             }
+            curr = ltemp_curr;
             return false;
         };
 };
@@ -274,8 +236,7 @@ int main (){
     cin >> tamanho;
     getchar();
     LinkedList<int> aLista(tamanho);
-    aLista.insert(10);
-
+    
     while (tamanho>0){
         int opt = ShowMenu();
         if (opt==1){
@@ -295,16 +256,7 @@ int main (){
             cout << "Element " << elem << " appended." << endl;
         }
         else if (opt==3){
-            int elem;
-            cout << "Digit one element to remove: ";
-            cin >> elem;
-            getchar();
-            bool status = aLista.remove(elem);
-            if (status==true){
-                cout << "Element ";
-                cout << elem;
-                cout << " removed." << endl;
-            }
+            aLista.remove();
         }
         else if (opt==4){
             aLista.moveToStart();
@@ -325,11 +277,12 @@ int main (){
             else{cout<<"Already in final position."<<endl;}
         }
         else if (opt==8){
-            cout << "The current lenght is " << aLista.length();
+            cout << "The current lenght is " << aLista.length() << endl;
         }
         else if (opt==9){
             cout << "The current position is ";
-            aLista.getCurrentPos();
+            cout << aLista.getCurrentPos();
+            cout << endl;
         }
         else if (opt==10){
             cout << "Digit one position " << endl;
@@ -359,10 +312,10 @@ int main (){
         else if (opt==15){return 0;}
         //system("@clear||cls");
     }
-    aLista.length();
-    aLista.insert(10);
-    aLista.length();
-    cout << aLista.find(0) << endl;
+    // aLista.length();
+    // aLista.insert(10);
+    // aLista.length();
+    // cout << aLista.find(0) << endl;
 
     return 0;
 }
