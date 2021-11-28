@@ -341,7 +341,6 @@ int main (){
             aLista.getMaxSize();
         }
         else if (opt==16) {return 0;}
-        //system("@clear||cls");
     }
     // aLista.length();
     // aLista.insert(10);
