@@ -17,9 +17,7 @@ public:
     Estas funções estão comentadas pois não sei se ainda serão utilizadas
     e funções virtuais tem de ser implementadas nas classes derivadas,
     desse modo, como não sei se ainda serão utilizadas eu não implementei
-
     virtual void doubleList(const T& element) = 0;
-
     virtual int maxSize() = 0;
     */
     virtual void remove() = 0;
@@ -98,12 +96,26 @@ template <typename T> class LinkedList : public List<T>{
         }
 
         void remove(){
+<<<<<<< Updated upstream
             Link<T>* ltemp = curr -> next;
             if(tail == curr -> next) {
                 tail = curr;
             }
             curr -> next = (curr -> next) -> next;
             int it = (curr->next)->element;
+=======
+            if(curr == tail){
+                cout << "You are at the end of the list!! Move to previous position and remove the element." << endl;
+                return;
+            } 
+            Link<T>* ltemp = curr -> next;
+            int it = (curr->next)->element;
+            if(tail == curr -> next) {
+                tail = curr;
+            }else{
+                curr -> next = (curr -> next) -> next;
+            }
+>>>>>>> Stashed changes
             delete ltemp;
             count--;
             cout << "Element " << it << " removed.";
@@ -309,7 +321,11 @@ int main (){
         else if (opt==14){
             aLista.showAll();
         }
+<<<<<<< Updated upstream
         else if (opt==15){return 0;}
+=======
+        else if (opt==1) tamanho = 1;
+>>>>>>> Stashed changes
         //system("@clear||cls");
     }
     // aLista.length();
