@@ -192,6 +192,7 @@ template <typename T> class LinkedList : public List<T>{
 
         bool find(const T& element){
             Link<T> *ltemp_curr = curr;
+            curr = head;
             for(int i = 0; i!=count; ++i ){
                 curr = curr->next;
                 if (element==curr->element){
