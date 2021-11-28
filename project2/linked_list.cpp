@@ -12,6 +12,8 @@ public:
     //List();
     //~List();
 
+    virtual void arrayDoubled() = 0;
+
     virtual void insert(const T& element) = 0;
     /*
     Estas funções estão comentadas pois não sei se ainda serão utilizadas
@@ -61,7 +63,7 @@ template <typename T> class LinkedList : public List<T>{
         Link<T>* head;
         Link<T>* tail;
         Link<T>* curr;
-        int count;
+        int count, max_size;
 
         void init(){
             curr = tail = head = new Link<T>;
@@ -75,12 +77,25 @@ template <typename T> class LinkedList : public List<T>{
                 head = head -> next;
                 delete curr;
             }
+            count=0;
         }
         LinkedList(int size){
+            max_size = size;
             init();
         }
         ~LinkedList(){ 
             clear();
+        }
+
+        void arrayDoubled(){
+            if (count==max_size){
+                cout<<"Array doubled."<<endl;
+                max_size *= 2;
+            }
+        }
+
+        void getMaxSize(){
+            cout << "The maximum size of the list is " << max_size << "." << endl;
         }
 
         //insert in initial
@@ -88,22 +103,16 @@ template <typename T> class LinkedList : public List<T>{
             curr->next = new Link<T>(it, curr->next);
             if (tail==curr){tail = curr->next;}
             count++;
+            arrayDoubled();
         }
 
         void append(const T& it){
             tail = tail->next = new Link<T>(it, NULL);
             count++;
+            arrayDoubled();
         }
 
         void remove(){
-<<<<<<< Updated upstream
-            Link<T>* ltemp = curr -> next;
-            if(tail == curr -> next) {
-                tail = curr;
-            }
-            curr -> next = (curr -> next) -> next;
-            int it = (curr->next)->element;
-=======
             if(curr == tail){
                 cout << "You are at the end of the list!! Move to previous position and remove the element." << endl;
                 return;
@@ -115,7 +124,6 @@ template <typename T> class LinkedList : public List<T>{
             }else{
                 curr -> next = (curr -> next) -> next;
             }
->>>>>>> Stashed changes
             delete ltemp;
             count--;
             cout << "Element " << it << " removed.";
@@ -169,13 +177,15 @@ template <typename T> class LinkedList : public List<T>{
 
         void showAll(){
             cout << "##########\n";
-            Link<T> *tempCurr = curr;
-            curr = head;
-            for(int i=0; i<count; i++){
-                cout << "-" << (curr->next)->element << "-" << endl;
-                curr = curr->next;
+            if (count>0){
+                Link<T> *tempCurr = curr;
+                curr = head;
+                for(int i=0; i<count; i++){
+                    cout << "-" << (curr->next)->element << "-" << endl;
+                    curr = curr->next;
+                }
+                curr = tempCurr;
             }
-            curr = tempCurr;
             cout << "##########\n";
             return;
         }
@@ -219,7 +229,8 @@ int ShowMenu(){
     cout << "Digit 12 to clear list." << endl;
     cout << "Digit 13 to find one element." << endl;
     cout << "Digit 14 to show all elements." << endl;
-    cout << "Digit 15 to exit the program." << endl;
+    cout << "Digit 15 to get the maximum size of the list." << endl;
+    cout << "Digit 16 to exit the program." << endl;
     int opt;
     cin >> opt;
     getchar();
@@ -238,6 +249,7 @@ int ShowMenu(){
     else if (opt==13){return 13;}
     else if (opt==14){return 14;}
     else if (opt==15){return 15;}
+    else if (opt==16){return 16;}
     else{return ShowMenu();}
 }
 
@@ -269,6 +281,7 @@ int main (){
         }
         else if (opt==3){
             aLista.remove();
+            cout << endl;
         }
         else if (opt==4){
             aLista.moveToStart();
@@ -289,7 +302,8 @@ int main (){
             else{cout<<"Already in final position."<<endl;}
         }
         else if (opt==8){
-            cout << "The current lenght is " << aLista.length() << endl;
+            cout << "The current lenght is ";
+            aLista.length();
         }
         else if (opt==9){
             cout << "The current position is ";
@@ -306,6 +320,7 @@ int main (){
         else if (opt==11){
             cout << "The current element is ";
             aLista.getCurrentElem();
+            cout << endl;
         }
         else if (opt==12){
             aLista.clear();
@@ -313,19 +328,19 @@ int main (){
         }
         else if (opt==13){
             int elem;
+            cout << "Digit one element to be finded: ";
             cin >> elem;
             getchar();
-            if (aLista.find(elem)==true) {cout << "Element " << elem << "finded." << endl;}
+            if (aLista.find(elem)==true) {cout << "Element " << elem << " finded." << endl;}
             else{cout << "Element " << elem << " not found." << endl;}
         }
         else if (opt==14){
             aLista.showAll();
         }
-<<<<<<< Updated upstream
-        else if (opt==15){return 0;}
-=======
-        else if (opt==1) tamanho = 1;
->>>>>>> Stashed changes
+        else if (opt==15) {
+            aLista.getMaxSize();
+        }
+        else if (opt==16) {return 0;}
         //system("@clear||cls");
     }
     // aLista.length();
