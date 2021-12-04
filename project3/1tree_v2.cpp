@@ -34,11 +34,12 @@ template <typename E> class Link {
     private:
         Link<E> *left;
         Link<E> *right; // Pointer to next node in list
+        string name_city;
+        int positions[2];
     public:
         // Constructors
         Link(string city, int posX, int posY){
-            string name_city = city;
-            int positions[2];
+            name_city = city;
             positions[0] = posX;
             positions[1] = posY;
             left = NULL;
@@ -48,28 +49,27 @@ template <typename E> class Link {
         string getNameCity(){return name_city;}
         int getPosX(){return positions[0];}
         int getPosY(){return positions[1];}
-        Link<E> getLeft(){return left;}
-        LINK<E> getRight(){return right;}
-        void setLeftNode(Link *left2){left = left2;}
-        void setRightNode(Link *right2){right = right2;}
+        Link<E> *getLeft(){return left;}
+        Link<E> *getRight(){return right;}
+        void setLeftNode(Link<E> *left2){left = left2;}
+        void setRightNode(Link<E> *right2){right = right2;}
 };
 
 template <typename T> class nodeTree{
-    //private:
-        
-        
+    private:
+        Link<T> *root;
     public:
-        Link<T> *root;    
         nodeTree(string city, int posX, int posY){  //constructor with 3 parameters
             root = NULL;
             cout << "Node root created." << endl;
         };
 
         void insert(){
-            char city[256];
+            string city;
             int posX, posY;
             cout << "Enter the name of the city: ";
-            scanf("%[^\n]", city);
+            //scanf("%[^\n]", city);
+            cin >> city;
             getchar();
             cout << "Enter the x coordinate of the city: ";
             cin >> posX;
@@ -86,16 +86,16 @@ template <typename T> class nodeTree{
         };
 
 
-        void insertAux(Link<T> root, string name_city, int posx, int posy){
+        void insertAux(Link<T> *root, string name_city, int posx, int posy){
             if (root->getLeft()!=NULL){
-                Link<T> new_node = new Link<T>(city, posx, posy);
+                Link<T> *new_node = new Link<T>(name_city, posx, posy);
                 root->setLeftNode(new_node);
             }
             else{
                 insertAux(root->getLeft(), name_city, posx, posy);
             }
             if (root->getRight()!=NULL){
-                Link<T> new_node = new Link<T>(city, posx, posy);
+                Link<T> *new_node = new Link<T>(name_city, posx, posy);
                 root->setRightNode(new_node);
             }
             else{
@@ -109,8 +109,8 @@ template <typename T> class nodeTree{
         }
 
 
-        void ShowAllInOrder(Link<T> *root){
-            if (root!=NULL){
+        void ShowAllInOrder(Link<T> root){
+            if (*root!=NULL){
                 ShowAllInOrder(root->getLeft());
                 cout << "-" << root->getNameCity() << "-" << endl;
                 ShowAllInOrder(root->getRight());
@@ -147,7 +147,7 @@ int main(){
             arvore.insert();
         }
         else if (opt==7){
-            arvore.ShowAllInOrder(arvore.getRoot());
+            arvore.ShowAllInOrder((arvore.getRoot()));
         }
     }
 
