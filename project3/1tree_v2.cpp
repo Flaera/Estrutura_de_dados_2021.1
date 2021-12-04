@@ -104,7 +104,7 @@ template <typename T> class nodeTree{
         }
 
 
-        Link<T> getRoot(){
+        Link<T> *getRoot(){
             return root;
         }
 
@@ -147,7 +147,7 @@ int main(){
             arvore.insert();
         }
         else if (opt==7){
-            arvore.ShowAllInOrder((arvore.getRoot()));
+            arvore.ShowAllInOrder(&arvore.getRoot());
         }
     }
 
