@@ -163,6 +163,7 @@ int main(){
         else if (opt==7){
             //Link<int> p = arvore.getRoot();
             arvore.ShowAllInOrder(arvore);
+            //return 0;
         }
     }
 
