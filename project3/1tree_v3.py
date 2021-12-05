@@ -34,7 +34,7 @@ class nodeTree():
             self.root = Link(city, posx, posy)
             print("Root created.")
         else:
-            print("In recursion...")
+            #print("In recursion...")
             self.insertAux(self.root, city, posx, posy)
 
 
@@ -69,6 +69,29 @@ class nodeTree():
             #print("-{}-".format(root.name_city))
         return
 
+    
+    def searchByName(self, root, name_city):
+        #print("init: -", root.name_city, name_city)
+        sroot = None
+        if (root.name_city == name_city): return root
+        if (root.getLeft()!=0):
+            sroot = self.searchByName(root.getLeft(), name_city)
+        if (root.getRight()!=0):
+            sroot = self.searchByName(root.getRight(), name_city)
+        return sroot 
+
+
+
+    def searchByCoord(self, root, x, y):
+        sroot = None
+        if (root.positions[0]==x) and (root.positions[1]==y): return root
+        if (root.getLeft()!=0):
+            sroot = self.searchByCoord(root.getLeft(), x, y)
+        if (root.getRight()!=0):
+            sroot = self.searchByCoord(root.getRight(), x, y)
+        return sroot 
+
+
 
 def ShowMenu():
     title = str("LIST OF NUMBERS INTEGERS")
@@ -97,6 +120,21 @@ def main():
         opt = int(input("Digit one option: "))
         if (opt==1):
             tree.insert()
+        elif (opt==4):
+            name = str(input("Digit the name of city to search: "))
+            search = tree.searchByName(tree.getRoot(), name)
+            if (search!=None):
+                print("City {} finded in ({},{})".format(search.name_city, search.positions[0],
+                 search.positions[1]))
+            else: print("City not finded.")
+        elif (opt==5):
+            x = int(input("Digit the coordinate x: "))
+            y = int(input("Digit the coordinate y: "))
+            search = tree.searchByCoord(tree.getRoot(), x, y)
+            if (search!=None):
+                print("City {} finded in ({},{})".format(search.name_city, search.positions[0],
+                 search.positions[1]))
+            else: print("City not finded.")
         elif (opt==7):
             tree.ShowAllInOrder(tree.getRoot())
 
