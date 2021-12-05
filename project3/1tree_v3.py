@@ -59,7 +59,7 @@ class nodeTree():
     def ShowAllInOrder(self, root):
         if (root.getLeft()!=0):
             self.ShowAllInOrder(root.getLeft())
-            print("-{}-".format(root.name_city))
+        print("-{}-".format(root.name_city))
         if (root.getRight()!=0):
             self.ShowAllInOrder(root.getRight())
         return
