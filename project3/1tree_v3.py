@@ -21,33 +21,36 @@ class Link():
 
 class nodeTree():
     def __init__(self):
-        self.root = Link()
-        print("Node root created.")
+        self.root = 0
+        #print("Node root created.")
 
     
     def insert(self):
         city = str(input("Digit the name of city: "))
         posx = int(input("Digit the coordinate x: "))
         posy = int(input("Digit the coordinate y: "))
-        print("root aqui:", self.root)
-        if (self.root.getLeft() == 0):
+        
+        if (self.root==0):
             self.root = Link(city, posx, posy)
-        elif (self.root.getRight() == 0):
-            self.root = Link(city, posx, posy)
+            print("Root created.")
         else:
+            print("In recursion...")
             self.insertAux(self.root, city, posx, posy)
 
 
     def insertAux(self, root, city, posx, posy):
-        if (root.getLeft()!=0):
+        #print("root aqui:", root.name_city)
+        if (root.getLeft()==0):
             new_node = Link(city, posx, posy)
             root.setLeftNode(new_node)
-        else:
+            return
+        elif (root.getRight()!=0):
             self.insertAux(root.getLeft(), city, posx, posy)
         
-        if (root.getRight()!=0):
+        if (root.getRight()==0):
             new_node = Link(city, posx, posy)
             root.setRightNode(new_node)
+            return
         else:
             self.insertAux(root.getRight(), city, posx, posy)
 
@@ -57,12 +60,32 @@ class nodeTree():
 
 
     def ShowAllInOrder(self, root):
+        #print("-{}-".format(root.name_city))
         if (root.getLeft()!=0):
             self.ShowAllInOrder(root.getLeft())
         print("-{}-".format(root.name_city))
         if (root.getRight()!=0):
             self.ShowAllInOrder(root.getRight())
+            #print("-{}-".format(root.name_city))
         return
+
+
+def ShowMenu():
+    title = str("LIST OF NUMBERS INTEGERS")
+    lenght = len(title)
+    for i in range(lenght): print("#", end="")
+    print("\n", end="")
+    print(title)
+    for i in range(lenght): print("#", end="")
+    print("\n", end="")
+    print("1 - Insert city.")
+    print("2 - Remove city by name.")
+    print("3 - Remove city by coordinate.")
+    print("4 - Search city by name.")
+    print("5 - Search city by coordinate.")
+    print("6 - Search by distance although of one point (x,y).")
+    print("7 - Show all in order")
+    print("8 - Exit the program.")
 
     
 def main():
@@ -70,6 +93,7 @@ def main():
 
     opt = int(0)
     while(opt!=8):
+        ShowMenu()
         opt = int(input("Digit one option: "))
         if (opt==1):
             tree.insert()
