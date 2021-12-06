@@ -1,5 +1,6 @@
 #include <iostream>
-#include <string>
+#include <string.h>
+#include <stdio.h>
 #define DEBUG if(1)
 
 using namespace std;
@@ -115,7 +116,7 @@ template <typename T> class nodeTree{
             //Link<T> root = object.getRoot();
             if (object.root!=NULL){
                 ShowAllInOrder(object.root->getLeft(), 0);
-                cout << "-" << object.root->getNameCity() << "-" << endl;
+                cout << "City " << object.root->getNameCity() << " in ("<<object.root->getPosX()<<", "<<object.root->getPosY()<<")."<< endl;
                 ShowAllInOrder(object.root->getRight(), 0);
             }
         }
@@ -124,14 +125,33 @@ template <typename T> class nodeTree{
             //Link<T> root = object.getRoot();
             if (root!=NULL){
                 ShowAllInOrder(root->getLeft(), 0);
-                cout << "-" << root->getNameCity() << "-" << endl;
+                cout << "City " << root->getNameCity() << " in ("<<root->getPosX()<<", "<<root->getPosY()<<")."<< endl;
                 ShowAllInOrder(root->getRight(), 0);
             }
         }
+
+        Link<T> searchByName(Link<T> root, string city){
+            Link<T>* sroot = NULL;
+            if (strcmp(root.getNameCity(), city)==0){return root;}
+            if (root.getLeft()!=NULL){
+                sroot = searchByName(root.getLeft(), city);
+            }
+            if (root.getRight()!=NULL){
+                sroot = searchByName(root.getRight(), city);
+            }
+            return sroot;
+        }
+        
 };
 
 
 void ShowMenu(){
+    char title[] = "TREE OF CITIES\0";
+    for (int i=0; i<14; ++i){cout<<"#";}
+    cout << endl << title << endl;
+    for (int j=0; j<14; ++j){cout<<"#";}
+    cout<<endl;
+
     cout << "1 - Insert city." << endl;
     cout << "2 - Remove city by name." << endl;
     cout << "3 - Remove city by coordinate." << endl;
@@ -157,11 +177,22 @@ int main(){
         getchar();
         if (opt==1){
             arvore.insert();
-        }if (opt==7){
-            arvore.ShowAllInOrder(arvore);
-        }else if (opt==8){
-           cout << arvore.getRoot()<< endl << endl;
         }
+        else if (opt==4){
+            cout << "Digit the name of city to search: " << endl;
+            string city;
+            cin >> city;
+            Link<int>* search_city = arvore.searchByName(arvore.getRoot(), city);
+            if (search_city!=NULL){cout << "City finded." << endl;}
+            else{cout << "City not found." << endl;}
+        }
+        else if (opt==7){
+            arvore.ShowAllInOrder(arvore);
+        }
+        else if (opt==8){
+            cout << arvore.getRoot()<< endl << endl;
+        }
+        else if (opt==9){return 0;}
     }
 
     return 0;
