@@ -1,5 +1,7 @@
 #include <iostream>
-#include <string>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 #define DEBUG if(1)
 
 using namespace std;
@@ -49,15 +51,15 @@ template <typename E> class Link {
         int getPosY(){return positions[1];}
         Link<E>* getLeft(){return left;}
         Link<E>* getRight(){return right;}
-        void setLeftNode(Link<E>* left2){left = left2;}
-        void setRightNode(Link<E>* right2){right = right2;}
+        void setLeftNode(Link<E> *left2){left = left2;}
+        void setRightNode(Link<E> *right2){right = right2;}
 };
 
 template <typename T> class nodeTree{
     //private:
         //Link<T> *root;
     public:
-        Link<T>* root;
+        Link<T> *root;
         nodeTree(){  //constructor with 3 parameters
             root = NULL;
             cout << "Node root created." << endl;
@@ -67,6 +69,7 @@ template <typename T> class nodeTree{
             string city;
             int posX, posY;
             cout << "Enter the name of the city: ";
+            //scanf("%[^\n]", city);
             cin >> city;
             getchar();
             cout << "Enter the x coordinate of the city: ";
@@ -80,18 +83,19 @@ template <typename T> class nodeTree{
             else{
                 insertAux(root, city, posX, posY);
             }
-        }
+            return;
+        };
 
 
-        void insertAux(Link<T>* root, string name_city, int posx, int posy){
-            if (root->getLeft()==NULL){
+        void insertAux(Link<T> *root, string name_city, int posx, int posy){
+            if (root->getLeft()!=NULL){
                 Link<T>* new_node = new Link<T>(name_city, posx, posy);
                 root->setLeftNode(new_node);
             }
             else{
                 insertAux(root->getLeft(), name_city, posx, posy);
             }
-            if (root->getRight()==NULL){
+            if (root->getRight()!=NULL){
                 Link<T>* new_node = new Link<T>(name_city, posx, posy);
                 root->setRightNode(new_node);
             }
@@ -101,7 +105,7 @@ template <typename T> class nodeTree{
         }
 
 
-        Link<T>* getRoot(){
+        Link<T> *getRoot(){
             return root;
         }
 
@@ -113,16 +117,19 @@ template <typename T> class nodeTree{
                 cout << "-" << object.root->getNameCity() << "-" << endl;
                 ShowAllInOrder(object.root->getRight(), 0);
             }
-        }
-    
-        void ShowAllInOrder(Link<T>* root, int a){
+            return;
+        };
+
+        
+        void ShowAllInOrder(Link<T> root, int a){
             //Link<T> root = object.getRoot();
-            if (root!=NULL){
+            if (*root!=NULL){
                 ShowAllInOrder(root->getLeft(), 0);
                 cout << "-" << root->getNameCity() << "-" << endl;
                 ShowAllInOrder(root->getRight(), 0);
             }
-        }
+            return;
+        };
 };
 
 
@@ -134,14 +141,14 @@ void ShowMenu(){
     cout << "5 - Search city by coordinate." << endl;
     cout << "6 - Search by distance although of one point (x,y)." << endl;
     cout << "7 - Show all cities." << endl;
-    cout << "8 - Show root of the tree." << endl;
-    cout << "9 - Exit the program." << endl;
+    cout << "8 - Exit the program." << endl;
     return;
 }
 
 
 int main(){
 
+    //nodeTree<int> arvore("Rio", 2, 3);
     nodeTree<int> arvore;
 
     int opt = 0;
@@ -152,10 +159,11 @@ int main(){
         getchar();
         if (opt==1){
             arvore.insert();
-        }if (opt==7){
+        }
+        else if (opt==7){
+            //Link<int> p = arvore.getRoot();
             arvore.ShowAllInOrder(arvore);
-        }else if (opt==8){
-           cout << arvore.getRoot()<< endl << endl;
+            //return 0;
         }
     }
 
