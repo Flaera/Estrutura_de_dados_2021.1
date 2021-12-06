@@ -82,21 +82,26 @@ template <typename T> class nodeTree{
             }
         }
 
-
+        //Cidades com inicial maiúsculas tem precedência alfabética
+        //em relação à cidades com inicial minúscula. Bug deve ser consertado
+        //antes de envio.
         void insertAux(Link<T>* root, string name_city, int posx, int posy){
-            if (root->getLeft()==NULL){
-                Link<T>* new_node = new Link<T>(name_city, posx, posy);
-                root->setLeftNode(new_node);
-            }
-            else{
-                insertAux(root->getLeft(), name_city, posx, posy);
-            }
-            if (root->getRight()==NULL){
-                Link<T>* new_node = new Link<T>(name_city, posx, posy);
-                root->setRightNode(new_node);
-            }
-            else{
-                insertAux(root->getRight(), name_city, posx, posy);
+            if(root->getNameCity() > name_city){
+                if (root->getLeft()==NULL){
+                    Link<T>* new_node = new Link<T>(name_city, posx, posy);
+                    root->setLeftNode(new_node);
+                }
+                else{
+                    insertAux(root->getLeft(), name_city, posx, posy);
+                }
+            }else{
+                if (root->getRight()==NULL){
+                    Link<T>* new_node = new Link<T>(name_city, posx, posy);
+                    root->setRightNode(new_node);
+                }
+                else{
+                    insertAux(root->getRight(), name_city, posx, posy);
+                }
             }
         }
 
