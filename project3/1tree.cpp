@@ -133,7 +133,7 @@ template <typename T> class nodeTree{
 
         Link<T>* searchByName(nodeTree<T> object, string city, int trash){
             Link<T>* info = new Link<T>;
-            searchByName(object.root, city);
+            info = searchByName(object.root, city);
             return info;
         }
 
@@ -190,7 +190,6 @@ int main(){
             cout << "Digit the name of city to search: " << endl;
             cin >> city;
             Link<int>* search_city = arvore.searchByName(arvore, city, 0);
-            cout << search_city << endl;
             if (search_city != NULL){cout << "City finded." << endl;}
             else{cout << "City not found." << endl;}
         }
