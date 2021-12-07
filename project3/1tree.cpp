@@ -260,9 +260,12 @@ int main(){
             arvore.ShowAllInOrder(arvore);
         }
         else if (opt==8){
-            cout << arvore.getRoot()<< endl << endl;
+            if (arvore.getRoot()!=NULL){
+                cout << "City "<< arvore.getRoot()->getNameCity()<< " in the root." << endl << endl;
+            }
+            else{cout<<"Root not created."<<endl;}
         }
-        //else if (opt==9){return 0;}
+        else if (opt==9){return 0;}
     }
 
     return 0;
