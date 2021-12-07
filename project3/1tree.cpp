@@ -221,6 +221,19 @@ template <typename T> class nodeTree{
             return search;
         }
         
+        bool removeByName(Link<T>* root, string name_city){
+            bool search = false;
+            if (root!=NULL){
+                if (root->getNameCity()==name_city){
+                    search = true;
+                    root = NULL;
+                    return search;
+                }
+                search = removeByName(root->getLeft(), name_city);
+                search = removeByName(root->getRight(), name_city);
+            }
+            return search;
+        }
 };
 
 
@@ -256,6 +269,14 @@ int main(){
         getchar();
         if (opt==1){
             arvore.insert();
+        }
+        else if (opt==2){
+            cout<<"Digit the name of city: ";
+            string city;
+            cin >> city;
+            bool is_removed = arvore.removeByName(arvore.getRoot(), city);
+            if (is_removed==true){cout << "Sub-tree removed." << endl;}
+            else{cout<<"City not found."<<endl;}
         }
         else if (opt==3){
             int posX, posY;
