@@ -84,6 +84,20 @@ template <typename T> class nodeTree{
             }
         }
 
+        int deleteChildren(Link<T>* node){
+            if (node != NULL){
+                int check = 1;
+                check = deleteChilren(node->getLeft());
+                if(check == 0){
+                    delete root->getLeft();
+                }
+                check = deleteChilren(node->getRight());
+                if(check == 0){
+                    delete root->getRight();
+                }
+            }
+            return 0;
+        }
 
         Link<T>* getRoot(){
             return root;
