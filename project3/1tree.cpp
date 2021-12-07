@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string.h>
+#include <cmath>
 #include <stdio.h>
 #define DEBUG if(1)
 
@@ -131,6 +132,39 @@ template <typename T> class nodeTree{
             }
         }
 
+        void deleteByCoordinate(nodeTree<T> object, int posX, int posY){
+            int check;
+            check = traverseCoordinate(object.root, posX, posY);
+            if(check == 0){cout << "City not finded. Deletion could not occur." << endl;}
+        }
+
+        int traverseCoordinate(Link<T>* root, int posX, int posY){
+            int check = 0;
+            if (root!=NULL){
+                check = traverseCoordinate(root->getLeft(), posX, posY);
+                if(root->getPosX() == posX && root->getPosY() == posY){
+                    delete root;
+                    cout << "Node deleted" << endl;
+                    return 1;
+                }
+                if(check != 0){
+                    root->setLeftNode(NULL);
+                    return check;
+                }
+                check = traverseCoordinate(root->getRight(), posX, posY);
+                if(root->getPosX() == posX && root->getPosY() == posY){
+                    delete root;
+                    cout << "Node deleted" << endl;
+                    return 1;
+                }if(check != 0){
+                    root->setRightNode(NULL);
+                    return check;
+                }
+            }
+            return check;
+        }
+
+
         Link<T>* searchByName(nodeTree<T> object, string city, int trash){
             Link<T>* info = new Link<T>;
             info = searchByName(object.root, city);
@@ -147,6 +181,20 @@ template <typename T> class nodeTree{
                 sroot = searchByName(root->getRight(), city);
             }
             return sroot;
+        }
+
+        void withinDistance(Link<T>* root, int posX, int posY, int radius){
+            double distance;
+            distance = sqrt(pow(abs(posX - root->getPosX()), 2) + pow(abs(posY- root->getPosY()), 2));
+            if (distance <= radius){cout << "-" << root->getNameCity() << "-" << endl;}
+        }
+
+        void ShowAllInOrder(Link<T>* root, int posX, int posY, int radius){
+            if (root!=NULL){
+                ShowAllInOrder(root->getLeft(), posX, posY, radius);
+                withinDistance(root, posX, posY, radius);
+                ShowAllInOrder(root->getRight(), posX, posY, radius);
+            }
         }
         
 };
@@ -177,21 +225,36 @@ int main(){
     nodeTree<int> arvore;
 
     int opt = 0;
-    while (opt!=8){
+    while (opt!=9){
         ShowMenu();
         cout << "Digit one option in list:" << endl;
         cin >> opt;
         getchar();
         if (opt==1){
             arvore.insert();
-        }
-        else if (opt==4){
+        }else if (opt==3){
+            int posX, posY;
+            cout << "Enter the x coordinate: ";
+            cin >> posX;
+            cout << "Enter the y coordinate: ";
+            cin >> posY;
+            arvore.deleteByCoordinate(arvore, posX, posY);
+        }else if (opt==4){
             string city;
             cout << "Digit the name of city to search: " << endl;
             cin >> city;
             Link<int>* search_city = arvore.searchByName(arvore, city, 0);
             if (search_city != NULL){cout << "City finded." << endl;}
             else{cout << "City not found." << endl;}
+        }else if(opt==6){
+            int posX, posY, radius;
+            cout << "Enter the x coordinate: ";
+            cin >> posX;
+            cout << "Enter the y coordinate: ";
+            cin >> posY;
+            cout << "Enter the distance to the origin: ";
+            cin >> radius;
+            arvore.ShowAllInOrder(arvore.root, posX, posY, radius);
         }
         else if (opt==7){
             arvore.ShowAllInOrder(arvore);
