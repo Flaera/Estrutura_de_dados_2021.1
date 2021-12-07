@@ -6,30 +6,6 @@
 
 using namespace std;
 
-/*  Esse código creio que não precisaremos mais
-    Mas não exclui só por não ter certeza
-    se vamos ou não usar ainda.
-    
-template <typename N> class CreateNode{
-    public:
-        *left;
-        *right;
-        N data[2];
-        CreateNode(N element){
-            char name_city[256];
-            int positions[2];
-            data[0] = name_city[256];
-            data[1] = positions[2];
-            cout << "Digit the name of city:\n";
-            cin >> name_city;
-            cout << "Digit the positions in x and y of this city:" << endl;
-            cin >> positions[0];
-            cin >> positions[1];
-            left = NULL;
-            right = NULL;
-        };
-};*/
-
 template <typename E> class Link {
     private:
         Link<E>* left;
@@ -143,20 +119,44 @@ template <typename T> class nodeTree{
             if (root!=NULL){
                 check = traverseCoordinate(root->getLeft(), posX, posY);
                 if(root->getPosX() == posX && root->getPosY() == posY){
+                    if(root->getLeft() != NULL || root->getRight() != NULL){
+                        char choice;
+                        cout << endl <<"WARNING!! The node you want delete have children." << endl;
+                        cout << "Deleting that node will delete it's children too." << endl;
+                        cout << "Confirm deletion? (Y for yes | N for no)." << endl;
+                        cout << "Enter your choice: ";
+                        cin >> choice;
+                        if(choice == 'n' || choice == 'N'){
+                            cout << endl << "Deletion denied by user." << endl;
+                            return 2;
+                        }
+                    }
                     delete root;
                     cout << "Node deleted" << endl;
                     return 1;
                 }
-                if(check != 0){
+                if(check == 1){
                     root->setLeftNode(NULL);
                     return check;
                 }
                 check = traverseCoordinate(root->getRight(), posX, posY);
                 if(root->getPosX() == posX && root->getPosY() == posY){
+                    if(root->getLeft() != NULL || root->getRight() != NULL){
+                        char choice;
+                        cout << endl <<"WARNING!! The node you want delete have children." << endl;
+                        cout << "Deleting that node will delete it's children too." << endl;
+                        cout << "Confirm deletion? (Y for yes | N for no)." << endl;
+                        cout << "Enter your choice: ";
+                        cin >> choice;
+                        if(choice == 'n' || choice == 'N'){
+                            cout << endl << "Deletion denied by user." << endl;
+                            return 2;
+                        }
+                    }
                     delete root;
                     cout << "Node deleted" << endl;
                     return 1;
-                }if(check != 0){
+                }if(check == 1){
                     root->setRightNode(NULL);
                     return check;
                 }
