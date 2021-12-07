@@ -210,6 +210,16 @@ template <typename T> class nodeTree{
                 ShowAllInOrder(root->getRight(), posX, posY, radius);
             }
         }
+
+        bool searchByCoordinate(Link<T>* root, int posx, int posy){
+            bool search = false;
+            if (root!=NULL){
+                if ((root->getPosX()==posx) && (root->getPosY()==posy)){return true;}
+                search = searchByCoordinate(root->getLeft(), posx, posy);
+                search = searchByCoordinate(root->getRight(), posx, posy);
+            }
+            return search;
+        }
         
 };
 
@@ -246,21 +256,38 @@ int main(){
         getchar();
         if (opt==1){
             arvore.insert();
-        }else if (opt==3){
+        }
+        else if (opt==3){
             int posX, posY;
             cout << "Enter the x coordinate: ";
             cin >> posX;
             cout << "Enter the y coordinate: ";
             cin >> posY;
             arvore.deleteByCoordinate(arvore, posX, posY);
-        }else if (opt==4){
+        }
+        else if (opt==4){
             string city;
             cout << "Digit the name of city to search: " << endl;
             cin >> city;
             Link<int>* search_city = arvore.searchByName(arvore, city, 0);
             if (search_city != NULL){cout << "City finded." << endl;}
             else{cout << "City not found." << endl;}
-        }else if(opt==6){
+        }else if (opt==5){
+            int x, y;
+            cout << "Digit the coordinate x: ";
+            cin >> x;
+            cout << "Digit the coordinate y: ";
+            cin >> y;
+            if ((arvore.getRoot()->getPosX()==x) && (arvore.getRoot()->getPosY()==y)){
+                cout << "City finded." << endl;
+            }
+            else{
+                bool search = arvore.searchByCoordinate(arvore.getRoot(), x, y);
+                if (search==true){cout<<"City finded."<<endl;}
+                else{cout<<"City not found."<<endl;}
+            }
+        }
+        else if(opt==6){
             int posX, posY, radius;
             cout << "Enter the x coordinate: ";
             cin >> posX;
