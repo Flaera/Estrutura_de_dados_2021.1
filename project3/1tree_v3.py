@@ -94,7 +94,7 @@ class nodeTree():
 
 
 def ShowMenu():
-    title = str("LIST OF NUMBERS INTEGERS")
+    title = str("TREE OF CITIES")
     lenght = len(title)
     for i in range(lenght): print("#", end="")
     print("\n", end="")

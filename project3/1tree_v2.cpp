@@ -125,7 +125,7 @@ template <typename T> class nodeTree{
             //Link<T> root = object.getRoot();
             if (*root!=NULL){
                 ShowAllInOrder(root->getLeft(), 0);
-                cout << "-" << root->getNameCity() << "-" << endl;
+                cout << "City " << root->getNameCity() <<" in ("<<root.getPosX()<<", "<<root.getPosY()<<")."<< endl;
                 ShowAllInOrder(root->getRight(), 0);
             }
             return;
