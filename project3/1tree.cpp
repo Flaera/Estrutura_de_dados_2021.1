@@ -23,6 +23,7 @@ template <typename E> class Link {
             cout << "Node created." << endl;
         }
         Link(){}
+        ~Link(){cout << "NODE DELETED" << endl;}
         string getNameCity(){return name_city;}
         int getPosX(){return positions[0];}
         int getPosY(){return positions[1];}
@@ -30,24 +31,23 @@ template <typename E> class Link {
         Link<E>* getRight(){return right;}
         void setLeftNode(Link<E>* left2){left = left2;}
         void setRightNode(Link<E>* right2){right = right2;}
+        
 };
 
 template <typename T> class nodeTree{
-    //private:
-        //Link<T> *root;
     public:
         Link<T>* root;
         nodeTree(){  //constructor with 3 parameters
             root = NULL;
             cout << "Node root created." << endl;
         };
+        ~nodeTree(){};
 
         void insert(){
             string city;
             int posX, posY;
             cout << "Enter the name of the city: ";
-            cin >> city;
-            getchar();
+            getline(cin, city);
             cout << "Enter the x coordinate of the city: ";
             cin >> posX;
             cout << "Enter the y coordinate of the city: ";
@@ -61,9 +61,6 @@ template <typename T> class nodeTree{
             }
         }
 
-        //Cidades com inicial maiúsculas tem precedência alfabética
-        //em relação à cidades com inicial minúscula. Bug deve ser consertado
-        //antes de envio.
         void insertAux(Link<T>* root, string name_city, int posx, int posy){
             if(root->getNameCity() > name_city){
                 if (root->getLeft()==NULL){
@@ -84,25 +81,9 @@ template <typename T> class nodeTree{
             }
         }
 
-        int deleteChildren(Link<T>* node){
-            if (node != NULL){
-                int check = 1;
-                check = deleteChilren(node->getLeft());
-                if(check == 0){
-                    delete root->getLeft();
-                }
-                check = deleteChilren(node->getRight());
-                if(check == 0){
-                    delete root->getRight();
-                }
-            }
-            return 0;
-        }
-
         Link<T>* getRoot(){
             return root;
         }
-
 
         void ShowAllInOrder(nodeTree<T> object){
             //Link<T> root = object.getRoot();
@@ -121,64 +102,7 @@ template <typename T> class nodeTree{
                 ShowAllInOrder(root->getRight(), 0);
             }
         }
-
-        void deleteByCoordinate(nodeTree<T> object, int posX, int posY){
-            int check;
-            check = traverseCoordinate(object.root, posX, posY);
-            if(check == 0){cout << "City not finded. Deletion could not occur." << endl;}
-        }
-
-        int traverseCoordinate(Link<T>* root, int posX, int posY){
-            int check = 0;
-            if (root!=NULL){
-                check = traverseCoordinate(root->getLeft(), posX, posY);
-                if(root->getPosX() == posX && root->getPosY() == posY){
-                    if(root->getLeft() != NULL || root->getRight() != NULL){
-                        char choice;
-                        cout << endl <<"WARNING!! The node you want delete have children." << endl;
-                        cout << "Deleting that node will delete it's children too." << endl;
-                        cout << "Confirm deletion? (Y for yes | N for no)." << endl;
-                        cout << "Enter your choice: ";
-                        cin >> choice;
-                        if(choice == 'n' || choice == 'N'){
-                            cout << endl << "Deletion denied by user." << endl;
-                            return 2;
-                        }
-                    }
-                    delete root;
-                    cout << "Node deleted" << endl;
-                    return 1;
-                }
-                if(check == 1){
-                    root->setLeftNode(NULL);
-                    return check;
-                }
-                check = traverseCoordinate(root->getRight(), posX, posY);
-                if(root->getPosX() == posX && root->getPosY() == posY){
-                    if(root->getLeft() != NULL || root->getRight() != NULL){
-                        char choice;
-                        cout << endl <<"WARNING!! The node you want delete have children." << endl;
-                        cout << "Deleting that node will delete it's children too." << endl;
-                        cout << "Confirm deletion? (Y for yes | N for no)." << endl;
-                        cout << "Enter your choice: ";
-                        cin >> choice;
-                        if(choice == 'n' || choice == 'N'){
-                            cout << endl << "Deletion denied by user." << endl;
-                            return 2;
-                        }
-                    }
-                    delete root;
-                    cout << "Node deleted" << endl;
-                    return 1;
-                }if(check == 1){
-                    root->setRightNode(NULL);
-                    return check;
-                }
-            }
-            return check;
-        }
-
-
+        
         Link<T>* searchByName(nodeTree<T> object, string city, int trash){
             Link<T>* info = new Link<T>;
             info = searchByName(object.root, city);
@@ -214,23 +138,10 @@ template <typename T> class nodeTree{
         bool searchByCoordinate(Link<T>* root, int posx, int posy){
             bool search = false;
             if (root!=NULL){
-                if ((root->getPosX()==posx) && (root->getPosY()==posy)){return true;}
+                if ((root->getPosX()==posx) && (root->getPosY()==posy)){search = true; return search;}
                 search = searchByCoordinate(root->getLeft(), posx, posy);
+                if (search == true){return search;}
                 search = searchByCoordinate(root->getRight(), posx, posy);
-            }
-            return search;
-        }
-        
-        bool removeByName(Link<T>* root, string name_city){
-            bool search = false;
-            if (root!=NULL){
-                if (root->getNameCity()==name_city){
-                    search = true;
-                    delete root;
-                    return search;
-                }
-                search = removeByName(root->getLeft(), name_city);
-                search = removeByName(root->getRight(), name_city);
             }
             return search;
         }
@@ -245,14 +156,12 @@ void ShowMenu(){
     cout<<endl;
 
     cout << "1 - Insert city." << endl;
-    cout << "2 - Remove city by name." << endl;
-    cout << "3 - Remove city by coordinate." << endl;
-    cout << "4 - Search city by name." << endl;
-    cout << "5 - Search city by coordinate." << endl;
-    cout << "6 - Search by distance although of one point (x,y)." << endl;
-    cout << "7 - Show all cities." << endl;
-    cout << "8 - Show root of the tree." << endl;
-    cout << "9 - Exit the program." << endl;
+    cout << "2 - Search city by name." << endl;
+    cout << "3 - Search city by coordinate." << endl;
+    cout << "4 - Search by distance although of one point (x,y)." << endl;
+    cout << "5 - Show all cities." << endl;
+    cout << "6 - Show root of the tree." << endl;
+    cout << "7 - Exit the program." << endl;
     return;
 }
 
@@ -262,53 +171,32 @@ int main(){
     nodeTree<int> arvore;
 
     int opt = 0;
-    while (opt!=9){
+    while (opt!=7){
         ShowMenu();
         cout << "Digit one option in list:" << endl;
         cin >> opt;
         getchar();
         if (opt==1){
             arvore.insert();
-        }
-        else if (opt==2){
-            cout<<"Digit the name of city: ";
-            string city;
-            cin >> city;
-            bool is_removed = arvore.removeByName(arvore.getRoot(), city);
-            if (is_removed==true){cout << "Sub-tree removed." << endl;}
-            else{cout<<"City not found."<<endl;}
-        }
-        else if (opt==3){
-            int posX, posY;
-            cout << "Enter the x coordinate: ";
-            cin >> posX;
-            cout << "Enter the y coordinate: ";
-            cin >> posY;
-            arvore.deleteByCoordinate(arvore, posX, posY);
-        }
-        else if (opt==4){
+        }else if (opt==2){
             string city;
             cout << "Digit the name of city to search: " << endl;
-            cin >> city;
+            getline(cin, city);
             Link<int>* search_city = arvore.searchByName(arvore, city, 0);
             if (search_city != NULL){cout << "City finded." << endl;}
             else{cout << "City not found." << endl;}
-        }else if (opt==5){
+        }else if (opt==3){
             int x, y;
             cout << "Digit the coordinate x: ";
             cin >> x;
             cout << "Digit the coordinate y: ";
             cin >> y;
-            if ((arvore.getRoot()->getPosX()==x) && (arvore.getRoot()->getPosY()==y)){
-                cout << "City finded." << endl;
-            }
-            else{
                 bool search = arvore.searchByCoordinate(arvore.getRoot(), x, y);
-                if (search==true){cout<<"City finded."<<endl;}
+                if (search==true){cout<<"City found."<<endl;}
                 else{cout<<"City not found."<<endl;}
-            }
+            
         }
-        else if(opt==6){
+        else if(opt==4){
             int posX, posY, radius;
             cout << "Enter the x coordinate: ";
             cin >> posX;
@@ -318,16 +206,15 @@ int main(){
             cin >> radius;
             arvore.ShowAllInOrder(arvore.root, posX, posY, radius);
         }
-        else if (opt==7){
+        else if (opt==5){
             arvore.ShowAllInOrder(arvore);
         }
-        else if (opt==8){
+        else if (opt==6){
             if (arvore.getRoot()!=NULL){
                 cout << "City "<< arvore.getRoot()->getNameCity()<< " in the root." << endl << endl;
             }
             else{cout<<"Root not created."<<endl;}
         }
-        else if (opt==9){return 0;}
     }
 
     return 0;
