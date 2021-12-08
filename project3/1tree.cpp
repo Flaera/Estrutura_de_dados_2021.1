@@ -226,7 +226,7 @@ template <typename T> class nodeTree{
             if (root!=NULL){
                 if (root->getNameCity()==name_city){
                     search = true;
-                    root = NULL;
+                    delete root;
                     return search;
                 }
                 search = removeByName(root->getLeft(), name_city);
