@@ -1,3 +1,6 @@
+//João Victor dos Santos Araujo.
+//Rafael Luiz dos Santos.
+//Compilado em g++ usando a linguagem C++.
 #include <iostream>
 #include <string.h>
 #include <cmath>
