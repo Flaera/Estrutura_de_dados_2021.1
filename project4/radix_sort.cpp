@@ -2,8 +2,16 @@
 #include <stdio.h>
 #define DEBUG if(1)
 
+using namespace std;
 
-//FUNCAO GetMax()
+
+int getMax(int array[], int size){
+    int maxElem = array[0];
+    for (int i=1; i<size; ++i){
+        if (array[i]>maxElem){maxElem = array[i];}
+    }
+    return maxElem;
+}
 
 
 void CountingSort(int array[], int size, int div, int output[]){
@@ -35,34 +43,36 @@ void CountingSort(int array[], int size, int div, int output[]){
 
 
 int RadixSort(int array[], int size){
-    int max_elem_array = GetMax(array, size);
+    int max_elem_array = getMax(array, size);
     int output[size];
 
     for (int i=1; (max_elem_array/i)>0; i=i*10){
         CountingSort(array, size, i, output);
     }
+    return 0;
 }
 
 
 int main(){
     int size;
-    cout << "Enter with size of array: "
+    cout << "Enter with size of array: ";
     cin >> size;
     getchar();
 
-    cout << "Enter with " << size<<" elements in array:"
+    int array[size];
+    cout << "Enter with " << size<<" elements in array:";
     for (int j=0; j<size; ++j){
         cin >> array[j];
         getchar();
     }
 
-    cout << "Before sorting" << endl;
+    cout << "Before sorting:" << endl;
     for (int k=0; k<size; ++k){cout << array[k] <<" ";}
     cout << endl;
 
     RadixSort(array, size);
 
-    cout << "After sorting" << endl;
+    cout << "After sorting:" << endl;
     for (int l=0; l<size; ++l){cout << array[l] <<" ";}
     cout << endl;
 
