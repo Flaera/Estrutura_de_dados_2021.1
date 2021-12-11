@@ -1,10 +1,10 @@
 #include <iostream>
 #include <stdio.h>
-#include <time.h>
+#include <chrono>
 #define DEBUG if(1)
 
 using namespace std;
-
+using namespace std::chrono;
 
 int getMax(int array[], int size){
     int maxElem = array[0];
@@ -71,14 +71,16 @@ int main(){
     for (int k=0; k<size; ++k){cout << array[k] <<" ";}
     cout << endl;
 
-    time_t time_diff, t_end, t_init;
-    t_init = time(NULL);
+    auto start = high_resolution_clock::now();
+    
     RadixSort(array, size);
-    t_end = time(NULL);
-    time_diff = difftime(t_end, t_init);
-    printf("Radix sorting have delta time equal: %f.\n", (double)time_diff);
+    
+    auto stop = high_resolution_clock::now();
+    auto duration = duration_cast<nanoseconds>(stop - start);
 
-    cout << "After sorting:" << endl;
+    cout << "Radix sorting have delta time equal: " << duration.count() << " nanosseconds" << endl;
+
+    cout << endl <<"After sorting:" << endl;
     for (int l=0; l<size; ++l){cout << array[l] <<" ";}
     cout << endl;
 
