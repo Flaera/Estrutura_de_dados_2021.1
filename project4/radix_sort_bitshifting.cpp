@@ -1,5 +1,6 @@
 #include <iostream>
 #include <stdio.h>
+#include <time.h>
 #define DEBUG if(1)
 
 using namespace std;
@@ -46,7 +47,7 @@ int RadixSort(int array[], int size){
     int max_elem_array = getMax(array, size);
     int output[size];
 
-    for (int i=1; (max_elem_array>>(i/10)>0; i=i*10){
+    for (int i=1; (max_elem_array>>(i/10)>0); i=i*10){
         CountingSort(array, size, i, output);
     }
     return 0;
@@ -70,7 +71,12 @@ int main(){
     for (int k=0; k<size; ++k){cout << array[k] <<" ";}
     cout << endl;
 
+    time_t time_diff, t_end, t_init;
+    t_init = time(NULL);
     RadixSort(array, size);
+    t_end = time(NULL);
+    time_diff = difftime(t_end, t_init);
+    printf("Radix sorting have delta time equal: %f.\n", (double)time_diff);
 
     cout << "After sorting:" << endl;
     for (int l=0; l<size; ++l){cout << array[l] <<" ";}
