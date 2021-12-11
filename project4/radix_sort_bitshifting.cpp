@@ -46,7 +46,7 @@ int RadixSort(int array[], int size){
     int max_elem_array = getMax(array, size);
     int output[size];
 
-    for (int i=1; (max_elem_array>>(i/10)>0; i=i*10){
+    for (int i=1; (max_elem_array>>(i/10)>0); i=i*10){
         CountingSort(array, size, i, output);
     }
     return 0;
