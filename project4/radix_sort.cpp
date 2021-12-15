@@ -1,3 +1,4 @@
+//Projeto feito por João Victor dos Santos Araujo e Rafael Luiz dos Santos e compilado em g++
 #include <iostream>
 #include <stdio.h>
 #include <chrono>
