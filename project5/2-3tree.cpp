@@ -45,65 +45,88 @@ class Tree_2_3{
             cin >> root_world;
             cout << "Digit value of the node root: ";
             cin >> root_value;
-            Insert(root_world, root_value);
+            root = new Node(root_world, root_value); 
             cout << "Tree 2-3 created in form of dictionary.\n";
         }
         ~Tree_2_3(){}
 
 
         void Insert(string key, string value){
-            // cout << "string:" << root->GetValue();
-            // if (root->GetValue()==""){
-            //     root(key, value);
-            // }
-            // else{
-            InsertAux(key, value, root);
+            //cout << "string:" << root->GetValue();
+            if (root->GetValue()==""){
+                root = new Node(key, value);
+            }
+            else{
+                InsertAux(key, value, root);
+            }
         }
         int InsertAux(string key, string value, Node* node){
-            cout << "AQUI SIM???\n";
+            //cout << "AQUI SIM???\n" << node->GetLeft();
             if (node->GetLeft()!=NULL){
-                cout<<"left\n";
-                cout << key; // problema ta nesses couts!! Verficar amanhã!!!!!!!!!!!!
-                cout << node->GetLeft()->GetWordKey()[0] << "??\n"; 
-                if (key[0]<node->GetLeft()->GetWordKey()[0]){
+                string::iterator it1;
+                it1 = key.begin();
+                string::iterator it2;
+                string left = node->GetLeft()->GetWordKey();
+                it2 = left.begin();
+                if (*it1<*it2){
                     //Go to left
-                    return InsertAux(key, value, node->GetMid());
+                    cout<<"Left\n";
+                    return InsertAux(key, value, node->GetLeft());
                 }
             }
-            else if (node->GetRight()!=NULL){
-                if (key[0]>node->GetRight()->GetWordKey()[0]){
+            if (node->GetRight()!=NULL){
+                string::iterator it1;
+                it1 = key.begin();
+                string::iterator it2;
+                string right = node->GetRight()->GetWordKey();
+                it2 = right.begin();
+                if (*it1>*it2){
                     //Go to right
-                    cout<<"right\n";
+                    cout<<"Right\n";
                     return InsertAux(key, value, node->GetRight());
                 }
             }
-            else if (node->GetMid()!=NULL){
-                if (key[0]>node->GetMid()->GetWordKey()[0]){
+            if (node->GetMid()!=NULL){
+                // string::iterator it1;
+                // it1 = key.begin();
+                // string::iterator it2;
+                // string mid = node->GetMid()->GetWordKey();
+                // it2 = mid.begin();
+                // if (*it1>*it2){
                     //Go to mid
-                    cout<<"mid\n";
-                    return InsertAux(key, value, node->GetMid());
-                }
+                cout<<"Mid\n";
+                return InsertAux(key, value, node->GetMid());
+                // }
             }
-            cout << "AQUI!!!\n";
+            //cout << "AQUI!!!\n";
             //Insertions:
-            if ((node->GetLeft()==NULL) && (node->GetRight()!=NULL) && (node->GetMid()==NULL)){
-                Node* node = new Node(key, value);
-                node->SetLeft(node);
+            if ((node->GetLeft()==NULL) && (node->GetRight()==NULL) && (node->GetMid()==NULL)){
+                Node* new_node = new Node(key, value);
+                node->SetLeft(new_node);
                 return 1;
             }
-            else if ((node->GetLeft()!=NULL) && (node->GetRight()==NULL) && (node->GetMid()==NULL)){
-                Node* node = new Node(key, value);
-                node->SetRight(node);
+            else if ((node->GetLeft()==NULL) && (node->GetRight()!=NULL) && (node->GetMid()==NULL)){
+                Node* new_node = new Node(key, value);
+                node->SetLeft(new_node);
                 return 2;
             }
-            else if ((node->GetLeft()!=NULL) && (node->GetRight()!=NULL) && (node->GetMid()==NULL)){
-                Node* node = new Node(key, value);
-                node->SetMid(node);
-                //if ()
+            else if ((node->GetLeft()!=NULL) && (node->GetRight()==NULL) && (node->GetMid()==NULL)){
+                Node* new_node = new Node(key, value);
+                node->SetRight(new_node);
                 return 3;
             }
-        return 0;
+            else if ((node->GetLeft()!=NULL) && (node->GetRight()!=NULL) && (node->GetMid()==NULL)){
+                Node* new_node = new Node(key, value);
+                node->SetMid(new_node);
+                return 4;
+            }
+            return 0;
         }
+
+
+        Node* GetRoot(){return root;}
+
+
 };
         
 
@@ -111,9 +134,10 @@ int main(){
     Tree_2_3 tree23;
 
     tree23.Insert("m", "rafael");
-    tree23.Insert("2", "joao");
-    tree23.Insert("t", "ana");
-    tree23.Insert("4", "rebeca");
+    tree23.Insert("x", "joao");
+    tree23.Insert("z", "carla");
+    tree23.Insert("c", "ana");
+    tree23.Insert("b", "rebeca");
     tree23.Insert("a", "alice");   
     
     return 0;
