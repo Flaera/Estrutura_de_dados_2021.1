@@ -148,23 +148,24 @@ class Tree_2_3{
         // Se aproveita do código da transversal para percorrer a árvore até achar a key certa. 
         // Se não, return null, se não o ponteiro para o node da key
         Node* Find(string key, Node* root){
-            if (strcmp(root->GetLeftKey(),key)==0 || strcmp(root->GetRightKey(),key)==0 || strcmp(root->GetLeft(),key)==0 || strcmp(root->GetRight(),key)==0 || strcmp(root->GetMid(),key)==0){
+            if ((root->GetLeftKey().compare(key))==0 || (root->GetRightKey().compare(key)==0)){// || (root->GetLeft().compare(key)==0) || (root->GetRight().compare(key)==0) || (root->GetMid().compare(key)==0)){
                 return root;
             }
-            if(root -> GetLeft() != NULL){
-                Find(key, root ->GetLeft());
+            if(root->GetLeft() != NULL){
+                return Find(key, root->GetLeft());
             }
             //cout <<"Key: " << node -> GetLeftKey() << "  Word: " << node -> GetLeftKeyValue() << endl;
-            if(!root -> rightFieldIsEmpty(root)){
+            if(!root->rightFieldIsEmpty(root)){
                 //cout <<"Key: " << node -> GetRightKey() << "  Word: " << node -> GetRightKeyValue() << endl;
-                Find(key, root->GetRightKey());
+                return Find(key, root->GetRight());
             }
-            if(root -> GetRight() != NULL){
-                Find(key, root ->GetRight());
+            if(root->GetRight() != NULL){
+                return Find(key, root->GetRight());
             }
             return NULL;
         }
 };
+
 
 int main(){
     Tree_2_3 tree23;
@@ -179,7 +180,12 @@ int main(){
     tree23.traversal();
 
     string finded = "b";
-    cout<<"Node finded: "<<tree23.Find(finded)<<endl;
-
+    Node* search = tree23.Find(finded);
+    if (search->GetRightKey().compare(finded)==0){
+        cout << "To "<< finded << " at " << search->GetRightKeyValue() << endl;
+    }
+    if (search->GetLeftKey().compare(finded)==0){
+        cout << "To "<< finded << " at " << search->GetLeftKeyValue() << endl;
+    }
     return 0;
 }
