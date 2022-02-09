@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <cstring>
 
 using namespace std;
 
@@ -135,6 +136,34 @@ class Tree_2_3{
         bool isLeaf(Node* node){
             return node->isEmpty(node);
         }
+
+        //Chama a segunda declaração de Find() para por polimorfismo
+        Node* Find(string key){
+            Node* temp_root = root;
+            Node* find = Find(key, root);
+            root = temp_root;
+            return find;
+        }
+
+        // Se aproveita do código da transversal para percorrer a árvore até achar a key certa. 
+        // Se não, return null, se não o ponteiro para o node da key
+        Node* Find(string key, Node* root){
+            if (strcmp(root->GetLeftKey(),key)==0 || strcmp(root->GetRightKey(),key)==0 || strcmp(root->GetLeft(),key)==0 || strcmp(root->GetRight(),key)==0 || strcmp(root->GetMid(),key)==0){
+                return root;
+            }
+            if(root -> GetLeft() != NULL){
+                Find(key, root ->GetLeft());
+            }
+            //cout <<"Key: " << node -> GetLeftKey() << "  Word: " << node -> GetLeftKeyValue() << endl;
+            if(!root -> rightFieldIsEmpty(root)){
+                //cout <<"Key: " << node -> GetRightKey() << "  Word: " << node -> GetRightKeyValue() << endl;
+                Find(key, root->GetRightKey());
+            }
+            if(root -> GetRight() != NULL){
+                Find(key, root ->GetRight());
+            }
+            return NULL;
+        }
 };
 
 int main(){
@@ -148,6 +177,9 @@ int main(){
     tree23.Insert("a", "alice");   
 
     tree23.traversal();
-    
+
+    string finded = "b";
+    cout<<"Node finded: "<<tree23.Find(finded)<<endl;
+
     return 0;
 }
