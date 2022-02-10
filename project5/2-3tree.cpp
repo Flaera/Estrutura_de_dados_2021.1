@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <cstring>
+#define DEBUG if(1)
 
 using namespace std;
 
@@ -13,6 +14,8 @@ class Node{
         string lWord;
         string rKey;
         string rWord;
+        string temp_mKey;
+        string temp_mWord;
     public:
         Node(string theKey, string theValue){
             this -> lKey = theKey;          //Um nó vazio sempre terá os primeiros elementos 
@@ -20,6 +23,10 @@ class Node{
             this -> left = NULL;            //ou seja, na lKey e na lWord
             this -> mid = NULL;
             this -> right = NULL;
+            this -> rKey = "";
+            this -> rWord = "";
+            this -> temp_mKey = "";
+            this -> temp_mWord = "";
         }
         Node(){}
         ~Node(){}
@@ -28,6 +35,8 @@ class Node{
         Node* GetRight(){return right;}
         string GetLeftKeyValue(){return lWord;}
         string GetLeftKey(){return lKey;}
+        string GetTempMidKey(){return temp_mKey;}
+        string GetTempMidKeyValue(){return temp_mWord;}
         string GetRightKeyValue(){return rWord;}
         string GetRightKey(){return rKey;}
         void SetLeft(Node* node){left = node;}
@@ -44,6 +53,15 @@ class Node{
         void setRightField(Node* node, string key, string value){   //Este método serve para adicionar a
             node -> rKey = key; node -> rWord = value;              //chave e o valor no lado direito do nó
         }
+        
+        void setLeftField(Node* node, string key, string value){   //Este método serve para adicionar a
+            node -> lKey = key; node -> lWord = value;              //chave e o valor no lado esquerdo do nó
+        }
+
+        void setTempMidField(Node* node, string key, string value){   //Este método serve para adicionar a
+            node -> temp_mKey = key; node -> temp_mWord = value;              //chave e o valor no meio do nó
+        }
+
         void pushRight(Node* node, string key, string value){   //Este método serve para "empurrar" os valores
             node -> rKey = node -> lKey;                        //do lado esquerdo ao lado direito e adicionar
             node -> rWord =node -> lWord;                       //os valores indicados no parâmetro da função
@@ -89,7 +107,7 @@ class Tree_2_3{
                     Insert(key, value, root->GetRight());
                 }
             }
-            }
+        }
 
         //Este método insere os valores da chave e do valor no campo esquerdo ou direito do nó.
         //Além disto este método não necessita saber se a posição do nó é à esquerda, ao meio, 
@@ -101,8 +119,8 @@ class Tree_2_3{
                 }
                 else{
                     node -> setRightField(node, key, value);
+                    }
                 }
-            }
         }
 
         //Este método serve para iniciar a "travessia" pela árvore
@@ -154,15 +172,74 @@ class Tree_2_3{
             if(root->GetLeft() != NULL){
                 return Find(key, root->GetLeft());
             }
-            //cout <<"Key: " << node -> GetLeftKey() << "  Word: " << node -> GetLeftKeyValue() << endl;
             if(!root->rightFieldIsEmpty(root)){
-                //cout <<"Key: " << node -> GetRightKey() << "  Word: " << node -> GetRightKeyValue() << endl;
                 return Find(key, root->GetRight());
             }
             if(root->GetRight() != NULL){
                 return Find(key, root->GetRight());
             }
             return NULL;
+        }
+
+        // Verifica se o nó tem filhos:
+        Node* IsChildren(Node* node){
+            if (node->GetMid()!=NULL){
+                return node->GetMid();
+            }
+            if (node->GetLeft()!=NULL){
+                return node->GetLeft();
+            }
+            if (node->GetRight()!=NULL){
+                return node->GetRight();
+            }
+            return NULL;
+        }
+
+        // Utiliza a função Find para deletar:
+        bool Delete(string key){
+            DEBUG{cout << "AQUI!!"<<endl;}
+            Node* search = Find(key);
+            DEBUG{cout << "AQUI!!"<<endl;}
+            if (search!=NULL){
+                DEBUG{cout << "AQUI!!"<<endl;}
+                Node* is_children = IsChildren(search);
+                DEBUG{cout << "AQUI!!"<<endl;}
+                if (is_children!=NULL){
+                    DEBUG{cout << "AQUI!!"<<endl;}
+                    if (search->GetLeftKey().compare(key)==0){
+                        if ((!is_children->GetLeftKey().empty()) && (!is_children->GetRightKey().empty())){
+                            string temp_key = is_children->GetLeftKey();
+                            string temp_word = is_children->GetLeftKeyValue();
+                            is_children->setLeftField(is_children, "", "");
+                            search->setLeftField(search, temp_key, temp_word);
+                        }
+                        else{
+                            search=is_children;
+                        }
+                    }
+                    else if (search->GetRightKey().compare(key)==0){
+                        if ((!is_children->GetLeftKey().empty()) && (!is_children->GetRightKey().empty())){
+                            string temp_key = is_children->GetRightKey();
+                            string temp_word = is_children->GetRightKeyValue();
+                            is_children->setRightField(is_children, "", "");
+                            search->setRightField(search, temp_key, temp_word);
+                        }
+                        else{
+                            search=is_children;
+                        }
+                    }
+                }
+                else{
+                    if (search->GetLeftKey().compare(key)==0){
+                        search->setLeftField(search, "", "");
+                    }
+                    if (search->GetRightKey().compare(key)==0){
+                        search->setRightField(search, "", "");
+                    }
+                }
+                return true;
+            }
+            return false;
         }
 };
 
@@ -187,5 +264,17 @@ int main(){
     if (search->GetLeftKey().compare(finded)==0){
         cout << "To "<< finded << " at " << search->GetLeftKeyValue() << endl;
     }
+
+    string del = "b";
+    bool is_deleted = tree23.Delete(del);
+    if (is_deleted==true){
+        cout<<"Chave e respectivo valor eliminadas."<<endl;
+    }
+    else{
+        cout<<"Chave não encontrada."<<endl;
+    }
+
+    tree23.traversal();
+
     return 0;
 }
