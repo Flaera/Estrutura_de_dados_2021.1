@@ -48,7 +48,7 @@ class Node{
         string GetLeftKey(){return lKey;}
         string GetTempMidKey(){return temp_mKey;}
         string GetTempMidKeyValue(){return temp_mWord;}
-        string GetRightKeyValue(){return rWord;}
+        //string GetRightKeyValue(){return rWord;}
         string GetRightKey(){return rKey;}
         string GetThirdKey(){return thirdKey;}
         string GetLeftKeyValue(){return lWord;}
@@ -75,7 +75,7 @@ class Node{
 
         void setTempMidField(Node* node, string key, string value){   //Este método serve para adicionar a
             node -> temp_mKey = key; node -> temp_mWord = value;              //chave e o valor no meio do nó
-
+        }
         void setThirdField(Node* node, string key, string value){
             node -> thirdKey = key; node -> thirdWord = value;
         }
@@ -141,7 +141,7 @@ class Node{
         }
 
         tuple<string, string> getMidChild(Node* node){
-            return make_tuple(node->GetLeftKey(), node->GetLeftKeyValue());
+            return make_tuple(node->GetRightKey(), node->GetRightKeyValue());
         }
 
         int promote(Node* node, string side){
@@ -188,7 +188,20 @@ class Node{
             }
             else{
                 node -> setThirdField(node, key, value);
+
+                if(side == "left"){
+                    node -> mid = new Node(node -> GetLeft() -> GetRightKey(),
+                                           node -> GetLeft() ->GetRightKeyValue());
+                    node -> GetLeft() -> clearRightField(node -> GetLeft());
+                }
+                else if(side == "right"){
+                    node -> mid = new Node(node -> GetRight() -> GetLeftKey(),
+                                           node -> GetRight() ->GetLeftKeyValue());
+                    node -> GetRight() -> popRight(node -> GetRight());
+                }
+
                 return 2;
+
             }
             return 0;
         }
@@ -409,26 +422,34 @@ class Tree_2_3{
         //Chama a segunda declaração de Find() para por polimorfismo
         Node* Find(string key){
             Node* temp_root = root;
-            Node* find = Find(key, root);
-            root = temp_root;
+            Node* find = Find(key, temp_root);
+            //root = temp_root;
             return find;
         }
 
         // Se aproveita do código da transversal para percorrer a árvore até achar a key certa. 
         // Se não, return null, se não o ponteiro para o node da key
         Node* Find(string key, Node* root){
+            //DEBUG{cout<<"AQUI find\n";}
             if ((root->GetLeftKey().compare(key))==0 || (root->GetRightKey().compare(key)==0)){// || (root->GetLeft().compare(key)==0) || (root->GetRight().compare(key)==0) || (root->GetMid().compare(key)==0)){
+                DEBUG{cout<<"achou\n";}
                 return root;
             }
             if(root->GetLeft() != NULL){
+                DEBUG{cout<<"go left\n";}
                 return Find(key, root->GetLeft());
             }
             if(!root->rightFieldIsEmpty(root)){
-                return Find(key, root->GetRight());
+                if (root->GetMid()!=NULL){
+                    DEBUG{cout<<"go mid\n";}
+                    return Find(key, root->GetMid());
+                }
             }
             if(root->GetRight() != NULL){
+                DEBUG{cout<<"go right\n";}
                 return Find(key, root->GetRight());
             }
+            DEBUG{cout<<"go null\n";}
             return NULL;
         }
 
@@ -516,16 +537,20 @@ int main(){
     cout << endl;
     tree23.Insert("a", "alice");   
     tree23.traversal();
-
+    DEBUG{cout << "AQUI\n";}
     string finded = "b";
     Node* search = tree23.Find(finded);
-    if (search->GetRightKey().compare(finded)==0){
-        cout << "To "<< finded << " at " << search->GetRightKeyValue() << endl;
+    DEBUG{cout << "AQUI\n";}
+    if (search!=NULL){
+        if (search->GetRightKey().compare(finded)==0){
+            cout << "To "<< finded << " at " << search->GetRightKeyValue() << endl;
+        }
+        if (search->GetLeftKey().compare(finded)==0){
+            cout << "To "<< finded << " at " << search->GetLeftKeyValue() << endl;
+        }
     }
-    if (search->GetLeftKey().compare(finded)==0){
-        cout << "To "<< finded << " at " << search->GetLeftKeyValue() << endl;
-    }
-
+    else{cout<<"Chave não encontrada."<<endl;}
+    DEBUG{cout << "AQUI\n";}
     string del = "b";
     bool is_deleted = tree23.Delete(del);
     if (is_deleted==true){
