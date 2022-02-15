@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string>
 #include <cstring>
-#define DEBUG if(0)
+#define DEBUG if(1)
 #include <tuple>
 
 using namespace std;
@@ -426,6 +426,14 @@ class Tree_2_3{
         //Chama a segunda declaração de Find() para por polimorfismo
         Node* Find(string key){
             Node* temp_root = root;
+            DEBUG{
+                cout << "temp find:"<<temp_root->GetLeftKey()<<endl;
+                cout << "temp find:"<<temp_root->GetRightKey()<<endl;
+            }
+            if ((temp_root->GetLeftKey().compare(key)==0) || (temp_root->GetRightKey().compare(key)==0)){
+                DEBUG{cout << "root finded!!\n";}
+                return temp_root;
+            }
             Node* find = Find(key, temp_root);
             //root = temp_root;
             return find;
@@ -435,7 +443,7 @@ class Tree_2_3{
         // Se não, return null, se não o ponteiro para o node da key
         Node* Find(string key, Node* root){
             //DEBUG{cout<<"AQUI find\n";}
-            if ((root->GetLeftKey().compare(key))==0 || (root->GetRightKey().compare(key)==0)){// || (root->GetLeft().compare(key)==0) || (root->GetRight().compare(key)==0) || (root->GetMid().compare(key)==0)){
+            if ((root->GetLeftKey().compare(key)) || (root->GetRightKey().compare(key))){// || (root->GetLeft().compare(key)==0) || (root->GetRight().compare(key)==0) || (root->GetMid().compare(key)==0)){
                 DEBUG{cout<<"achou\n";}
                 return root;
             }
@@ -443,18 +451,18 @@ class Tree_2_3{
                 DEBUG{cout<<"go left\n";}
                 return Find(key, root->GetLeft());
             }
-            if(!root->rightFieldIsEmpty(root)){
+            //if(!root->rightFieldIsEmpty(root)){
                 if (root->GetMid()!=NULL){
                     DEBUG{cout<<"go mid\n";}
                     return Find(key, root->GetMid());
                 }
-            }
+            //}
             if(root->GetRight() != NULL){
                 DEBUG{cout<<"go right\n";}
                 return Find(key, root->GetRight());
             }
             DEBUG{cout<<"go null\n";}
-            return NULL;
+            return root;
         }
 
         // Verifica se o nó tem filhos:
@@ -482,7 +490,7 @@ class Tree_2_3{
                 DEBUG{cout << "AQUI!!"<<endl;}
                 if (is_children!=NULL){
                     DEBUG{cout << "AQUI!!"<<endl;}
-                    if (search->GetLeftKey().compare(key)==0){
+                    if (search->GetLeftKey().compare(key)){
                         if ((!is_children->GetLeftKey().empty()) && (!is_children->GetRightKey().empty())){
                             string temp_key = is_children->GetLeftKey();
                             string temp_word = is_children->GetLeftKeyValue();
@@ -491,9 +499,10 @@ class Tree_2_3{
                         }
                         else{
                             search=is_children;
+                            delete is_children;
                         }
                     }
-                    else if (search->GetRightKey().compare(key)==0){
+                    else if (search->GetRightKey().compare(key)){
                         if ((!is_children->GetLeftKey().empty()) && (!is_children->GetRightKey().empty())){
                             string temp_key = is_children->GetRightKey();
                             string temp_word = is_children->GetRightKeyValue();
@@ -502,14 +511,15 @@ class Tree_2_3{
                         }
                         else{
                             search=is_children;
+                            delete is_children;
                         }
                     }
                 }
                 else{
-                    if (search->GetLeftKey().compare(key)==0){
+                    if (search->GetLeftKey().compare(key)){
                         search->setLeftField(search, "", "");
                     }
-                    if (search->GetRightKey().compare(key)==0){
+                    if (search->GetRightKey().compare(key)){
                         search->setRightField(search, "", "");
                     }
                 }
@@ -549,11 +559,13 @@ int main(){
             Node* search = tree23.Find(finded);
             DEBUG{cout << "AQUI\n";}
             if (search!=NULL){
-                if (search->GetRightKey().compare(finded)==0){
-                    cout << "To "<< finded << " at " << search->GetRightKeyValue() << endl;
+                if (search->GetRightKey().compare(finded)){
+                    //cout << "To "<< finded << " at " << search->GetRightKeyValue() << endl;
+                    cout << "Chave encontrada" << endl;
                 }
-                if (search->GetLeftKey().compare(finded)==0){
-                    cout << "To "<< finded << " at " << search->GetLeftKeyValue() << endl;
+                if (search->GetLeftKey().compare(finded)){
+                    cout << "Chave encontrada" << endl;
+                    //cout << "To "<< finded << " at " << search->GetLeftKeyValue() << endl;
                 }
             }
             else{cout<<"Chave não encontrada."<<endl;}
