@@ -1,4 +1,4 @@
-//João Voctor dos Santos Araujo
+//João Victor dos Santos Araujo
 //Rafael Luiz dos Santos
 //Compilado em g++ utilizando C++
 #include <iostream>
