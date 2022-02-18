@@ -1,4 +1,4 @@
-//João Voctor dos Santos Araujo
+//João Victor dos Santos Araujo
 //Rafael Luiz dos Santos
 //Compilado em g++ utilizando C++
 #include <iostream>
@@ -18,8 +18,6 @@ class Node{
         string lWord;
         string rKey;
         string rWord;
-        string temp_mKey;
-        string temp_mWord;
         string thirdKey;
         string thirdWord;
     public:
@@ -31,8 +29,6 @@ class Node{
             this -> right = NULL;
             this -> rKey = "";
             this -> rWord = "";
-            this -> temp_mKey = "";
-            this -> temp_mWord = "";
         }
 
         Node(string theKey, string theValue, Node* left, Node* mid, Node* right){
@@ -49,9 +45,6 @@ class Node{
         Node* GetMid(){return mid;}
         Node* GetRight(){return right;}
         string GetLeftKey(){return lKey;}
-        string GetTempMidKey(){return temp_mKey;}
-        string GetTempMidKeyValue(){return temp_mWord;}
-        //string GetRightKeyValue(){return rWord;}
         string GetRightKey(){return rKey;}
         string GetThirdKey(){return thirdKey;}
         string GetLeftKeyValue(){return lWord;}
@@ -76,9 +69,6 @@ class Node{
             node -> lKey = key; node -> lWord = value;              //chave e o valor no lado esquerdo do nó
         }
 
-        void setTempMidField(Node* node, string key, string value){   //Este método serve para adicionar a
-            node -> temp_mKey = key; node -> temp_mWord = value;              //chave e o valor no meio do nó
-        }
         void setThirdField(Node* node, string key, string value){
             node -> thirdKey = key; node -> thirdWord = value;
         }
@@ -147,61 +137,82 @@ class Node{
             return make_tuple(node->GetRightKey(), node->GetRightKeyValue());
         }
 
+        void splitNode(Node* node){
+            Node* leftNode = new Node(node -> GetLeftKey(), node -> GetLeftKeyValue(), 
+                                      node->GetLeft(), NULL, NULL);
+            Node* rightNode = new Node(node -> GetRightKey(), node -> GetRightKeyValue(),
+                                      node -> GetMid(), NULL, node -> GetRight());
+            node -> SetLeft(leftNode);
+            node -> SetRight(rightNode);
+        }
+
         int promote(Node* node, string side){
-            DEBUG{cout << "promocao\n";}
+            cout << "promocao\n";
+            cout << "promote   " << node ->GetLeftKey() << endl;
             string key, value;
+            //tie(key, value);
             if(side == "left"){
-                tie(key, value) = node -> GetLeft() -> getMidChild(node);
+                tie(key, value) = node -> GetLeft() -> getMidChild(node->GetLeft());
                 node -> GetLeft() -> popThirdField(node -> GetLeft());
+                cout <<"valores  "<< key << "   "<< value << endl;
                 //fazer pop do third field, para preparar a separação dos nós
             }
             else if(side == "middle"){
-                tie(key, value) = node -> GetMid() -> getMidChild(node);
+                tie(key, value) = node -> GetMid() -> getMidChild(node->GetMid());
                 node -> GetMid() -> popThirdField(node -> GetMid());
             }
             else{
-                tie(key, value) = node -> GetRight() -> getMidChild(node);
+                tie(key, value) = node -> GetRight() -> getMidChild(node->GetRight());
                 node -> GetRight() -> popThirdField(node -> GetRight());
             }
 
             if(node -> rightFieldIsEmpty(node)){
                 if(key < node -> GetLeftKey()){
                     node -> pushRight(node, key, value);
-                    DEBUG{cout << "joab2\n";}
+                    cout << "joab23\n";
+                    cout << "joab23   " << node ->GetLeftKey();
                 }
                 else{
                     node -> setRightField(node, key, value);
-                    DEBUG{cout << "joab2   " << node ->GetLeftKey();}
+                    cout << "joab25   " << node ->GetLeftKey();
                 
                 }
 
                 if(side == "left"){
+                    cout << "Left\n";
+                    cout << "joabLeft   " << node ->GetLeftKey();
                     node -> mid = new Node(node -> GetLeft() -> GetRightKey(),
                                            node -> GetLeft() ->GetRightKeyValue());
                     node -> GetLeft() -> clearRightField(node -> GetLeft());
                 }
                 else if(side == "right"){
+                    cout << "Right\n";
                     node -> mid = new Node(node -> GetRight() -> GetLeftKey(),
                                            node -> GetRight() ->GetLeftKeyValue());
                     node -> GetRight() -> popRight(node -> GetRight());
                 }
-                cout << "   " <<node ->GetLeftKey() << endl;
+                cout << "valor promo   " <<node ->GetLeftKey() << endl;
+
 
                 return 0;
             }
             else{
                 node -> setThirdField(node, key, value);
-
+                node -> order(node);
+                //splitNode(node);
                 if(side == "left"){
-                    node -> mid = new Node(node -> GetLeft() -> GetRightKey(),
-                                           node -> GetLeft() ->GetRightKeyValue());
+                    Node* midNode = new Node(node -> GetLeft() -> GetRightKey(),
+                                             node -> GetLeft() ->GetRightKeyValue());
+                    node -> SetMid(midNode);
                     node -> GetLeft() -> clearRightField(node -> GetLeft());
                 }
                 else if(side == "right"){
-                    node -> mid = new Node(node -> GetRight() -> GetLeftKey(),
-                                           node -> GetRight() ->GetLeftKeyValue());
+                    Node* midNode = new Node(node -> GetRight() -> GetLeftKey(),
+                                             node -> GetRight() ->GetLeftKeyValue());
+                    node -> SetMid(midNode);
                     node -> GetRight() -> popRight(node -> GetRight());
                 }
+                cout << "valor promo   " <<node ->GetLeftKey() << endl;
 
                 return 2;
 
@@ -228,7 +239,7 @@ class Tree_2_3{
         ~Tree_2_3(){}
 
         void splitRoot(Node* node, string extraKey, string extraValue){
-            DEBUG{cout<<"rachou funcao\n";}
+            cout<<"rachou funcao\n";
             node ->setThirdField(node, extraKey, extraValue);
             if(extraKey < node ->GetRightKey()){
                 node -> order(node);
@@ -242,18 +253,21 @@ class Tree_2_3{
         }
 
         void splitRoot(Node* node){
-            DEBUG{cout<<"dividiu funcao\n";}
+            cout<<"dividiu funcao\n";
             node -> order(node);
-            
-            Node* leftNode = new Node(node ->GetLeftKey(), node -> GetLeftKeyValue(),
-                                      node ->GetLeft() -> GetLeft(), 
-                                      node -> GetMid() -> GetMid(),
-                                      node -> GetRight() -> GetRight());
+            //node -> splitNode(node -> GetLeft());
+            Node* leftNode = new Node(node -> GetLeftKey(), node -> GetLeftKeyValue(),
+                                      node -> GetLeft(), 
+                                      node -> GetLeft() -> GetMid(),
+                                      node -> GetLeft() -> GetRight());
+
+            Node* midNode = new Node("", "");
 
             Node* rightNode = new Node(node -> GetThirdKey(), node -> GetThirdKeyValue(),
-                                       node -> GetMid(), NULL, node -> GetRight());
+                                       node -> GetMid(), NULL, node -> GetRight()->GetRight());
             node -> SetLeft(leftNode);
             node -> SetRight(rightNode);
+            node -> SetMid(midNode);
             node -> popRight(node);
             node -> clearThirdField(node);
         }
@@ -266,7 +280,7 @@ class Tree_2_3{
                     }
                     else{
                         splitRoot(root, key, value);
-                        DEBUG{cout<<"rachou\n";}
+                        cout<<"rachou\n";
                     }
                 }
                 else if(key > root -> GetLeftKey()){
@@ -275,7 +289,7 @@ class Tree_2_3{
                     }
                     else{
                         splitRoot(root, key, value);
-                        DEBUG{cout<<"rachou\n";}
+                        cout<<"rachou\n";
                     }
                 }
             }
@@ -285,14 +299,14 @@ class Tree_2_3{
                     insertResult = Insert(key, value, root ->GetLeft());
                     if(insertResult == 1){
                         int promotionResult;
-                        DEBUG{cout << "joab0\n";}
+                        cout << "joab0Left\n";
                         promotionResult = root -> promote(root, "left");
-                        DEBUG{cout << "result: "<< promotionResult<<"  joab0 e:  " << root->GetLeftKey() <<endl;}
-                        traversal(root);
+                        cout << "result: "<< promotionResult<<" joab0Left e:  " << root->GetLeftKey() <<endl;
+                        //traversal(root);
 
                         if(promotionResult == 2){
                             splitRoot(root);
-                            DEBUG{cout<<"dividiu\n";}
+                            cout<<"dividiuLeft\n";
                         }
                     }
                     return;
@@ -302,11 +316,12 @@ class Tree_2_3{
                     insertResult = Insert(key, value, root -> GetMid());
                     if(insertResult == 1){
                         int promotionResult;
+                        cout << "joab0Middle\n";
                         promotionResult = root -> promote(root, "middle");
-
+                        cout << "result: "<< promotionResult<<" joab0Middle e:  " << root->GetLeftKey() <<endl;
                         if(promotionResult == 2){
                             splitRoot(root);
-                            DEBUG{cout<<"dividiu\n";}
+                            cout<<"dividiuMiddle\n";
                         }
                     }
                     return;
@@ -316,11 +331,12 @@ class Tree_2_3{
                     insertResult = Insert(key, value, root -> GetRight());
                     if(insertResult == 1){
                         int promotionResult;
+                        cout << "joab0Middle\n";
                         promotionResult = root -> promote(root, "right");
-
+                        cout << "result: "<< promotionResult<<" joab0Right e:  " << root->GetLeftKey() <<endl;
                         if(promotionResult == 2){
                             splitRoot(root);
-                            DEBUG{cout<<"dividiu\n";}
+                            cout<<"dividiuRight\n";
                         }
                     }
                     return;
@@ -341,7 +357,7 @@ class Tree_2_3{
                     }
                     else{
                         //Aqui tem de haver a promoção
-                        DEBUG{cout << "joab promovido aqui\n";}
+                        cout << "joab promovido aqui\n";
                         node -> setThirdField(node, key, value);
                         node -> order(node);
                         return 1;
@@ -350,7 +366,6 @@ class Tree_2_3{
                 else{
                     if(node -> rightFieldIsEmpty(node)){
                         node -> setRightField(node, key, value);
-                        node->order(node);
                         return 0;
                     }
                     else{
@@ -372,7 +387,6 @@ class Tree_2_3{
                     Insert(key, value, node -> GetRight());
                 }
             }
-            return 0;
         }
 
         //Este método serve para iniciar a "travessia" pela árvore
@@ -398,7 +412,7 @@ class Tree_2_3{
         void traversal(Node* node){
             //cout<<"ola\n";
             if(node -> GetLeft() != NULL){
-                DEBUG{cout<<"ola2\n";}
+                cout<<"ola2\n";
                 traversal(node ->GetLeft());
             }
             //cout<<"ola3\n";
@@ -443,7 +457,7 @@ class Tree_2_3{
         // Se não, return null, se não o ponteiro para o node da key
         Node* Find(string key, Node* root){
             //DEBUG{cout<<"AQUI find\n";}
-            if ((root->GetLeftKey().compare(key)) || (root->GetRightKey().compare(key))){// || (root->GetLeft().compare(key)==0) || (root->GetRight().compare(key)==0) || (root->GetMid().compare(key)==0)){
+            if ((root->GetLeftKey().compare(key)) || (root->GetRightKey().compare(key))){
                 DEBUG{cout<<"achou\n";}
                 return root;
             }
@@ -466,7 +480,7 @@ class Tree_2_3{
         }
 
         // Verifica se o nó tem filhos:
-        Node* IsChildren(Node* node){
+        Node* HaveChildren(Node* node){
             if (node->GetMid()!=NULL){
                 return node->GetMid();
             }
@@ -479,11 +493,10 @@ class Tree_2_3{
             return NULL;
         }
 
-        // Utiliza a função Find para deletar:
         bool Delete(string key){
-            DEBUG{cout << "AQUI!!"<<endl;}
+            //DEBUG{cout << "AQUI!!"<<endl;}
             Node* search = Find(key);
-            DEBUG{cout << "AQUI!!"<<endl;}
+            //DEBUG{cout << "AQUI!!"<<endl;}
             if (search!=NULL){
                 DEBUG{cout << "AQUI!!"<<endl;}
                 Node* is_children = IsChildren(search);
