@@ -229,7 +229,7 @@ class GraphL : public Graph{
 };
 
 
-//Class graph with list adjacency and algorithm off Dijsktra:
+//Class graph with list adjacency and algorithm of Dijsktra:
 class GraphLDijsktra: public GraphL{
     public:
         int minVertex(Graph* G, int* D) { // Find min cost vertex
@@ -265,7 +265,7 @@ class GraphLDijsktra: public GraphL{
 
 
 //class graph with implementation of matrix adjacency of Dijsktra:
-class GraphLDijsktra: public GraphM{
+class GraphMDijsktra: public GraphM{
     public:
         int minVertex(Graph* G, int* D) { // Find min cost vertex
             int i, v = -1;
@@ -300,6 +300,18 @@ class GraphLDijsktra: public GraphM{
 
 
 int main(){
+
+    int opt = 1;
+    while (opt!=0){
+        cout<<"1 - Test graph with matrix of adjacency.\n";
+        cout<<"2 - Test graph with list of adjacency.\n";
+        cout<<"3 - Test graph with matrix of adjacency and algorithm of Dijsktra.\n";
+        cout<<"4 - Test graph with list of adjacency and algorithm of Dijsktra.\n";
+        cout<<"5 - Test with graph sparse.";
+        cout<<"6 - Test with graph dense.";
+        cout << "Digit one option: ";
+        cin >> opt;
+    }
 
 
     return 0;
