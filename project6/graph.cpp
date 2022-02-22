@@ -6,14 +6,13 @@
 #include <iostream>
 #define VISITED true
 #define UNVISITED false
-#define INFINITY 1  //aqui n sei qual é o valor desta diretriz, mas coloquei 1
+#define INFINITY 31  //aqui n sei qual é o valor desta diretriz, mas coloquei 1
                     //porque em outro momento do código é dita como 0
 #define LIST_EMPTY "List empty."
 #define LIST_FULL "List fully."
 #define DEBUG if(0)
 
 using namespace std;
-
 
 //Classe abstrata de um grafo
 class Graph{
@@ -45,243 +44,132 @@ class Edge{
 };
 
 //Classe de lista ligada para o grafo por lista de adjacência
-template <typename E>
-class List{
-    // E List(){
-        
-    // };
+template <typename E> class List { // List ADT
     private:
-        int curr, curr_size, max_size, initMaxSize;
-        int *array;
+        void operator =(const List&) {} // Protect assignment
+        List(const List&) {} // Protect copy constructor
     public:
-        List(int max_size2){
-            curr = 0;
-            curr_size = 0;
-            max_size = initMaxSize = max_size2;
-            array = new int[max_size];
-        }
-        ~List(){
-            delete array;
-        }
-        void Insert(int element){
-            if ((curr_size!=0) && (curr_size<max_size)){
-                DEBUG{cout<<"AQUImax_size1: " << max_size << endl;}
-                for (int j=curr_size; j>=curr; j--){
-                    array[j] = array[j-1];
-                }
-            }
-            else if (curr_size>=max_size-1){
-                doubleList(element);
-                return;
-            }
-            
-            array[curr] = element;
-            //curr+=1;
-            curr_size+=1;        
-            return;
-        }
-
-        void doubleList(int element){
-            DEBUG{cout<<"AQUImax_size2: " << max_size << endl;}
-            cout << LIST_FULL;
-            //Copying array:
-            int array_copy[max_size + 1];
-            for (int i=0; i<curr; ++i){
-               array_copy[i] = array[i];
-            }
-            array_copy[curr] = element;
-            curr_size+=1;
-            for (int j=curr+1; j<curr_size; ++j){
-                array_copy[j] = array[j-1];
-            }
-            DEBUG{
-                for (int l=0; l<curr_size; ++l){
-                    cout << "-" << array_copy[l] << "-" << endl;
-                }
-            }
-            //Creating new array
-            delete[] array;
-            max_size = 2*max_size;
-            array = new int[max_size]; //It can generated out of memory
-            for (int k=0; k<curr_size; ++k){
-                array[k] = array_copy[k];
-            }
-            cout << "Array doubled." << endl << endl;
-            return;
-        }
-
-        void Remove(){
-            if (curr_size!=0){
-                for (int i=curr; i<curr_size; ++i){
-                    array[i] = array[i+1];
-                }
-                curr_size--;
-                cout << "Element in current position was removed.\n";
-            }
-            else{
-                cout << LIST_EMPTY;
-                array[curr] = -1;
-            }
-        }
-
-        //Return element on the actual position on the list
-        int GetCurrentElem(){
-            if(curr_size == 0)
-                return -1;
-            
-            return array[curr];
-            //DEBUG{printf("curr:%d-\n", curr);}
-        }
-
-        int SetCurrent(int index){
-            if ((index<curr_size) && (index >= 0)){
-                curr = index;
-                cout << "Setting for current element: " << array[curr] << endl;
-                return array[curr];
-            }
-            cout << "Index parameter most that current size list." << endl;
-            return -1;
-        }
-
-        int length(){
-            return curr_size;
-        }
-
-        int maxSize(){
-            return max_size;
-        }
-
-        //Return actual position in the list
-        int getCurrentPos(){
-            return curr;
-        }
-
-        void nextPos(){
-            if(curr == curr_size)
-                cout << "No more positions ahead! Already at the end of the list." << endl << endl;
-            else{
-                curr += 1;
-                cout << "Moved 1 position to the rigth." << endl << endl;
-            }
-        }
-
-        void prevPos(){
-            if(curr == 0)
-                cout << "No more positions behind! Already at the beginning of the list." << endl << endl;
-            else{
-                curr -= 1;
-                cout << "Moved 1 position to the left." << endl << endl;
-            }
-        }
-
-        void moveToStart(){
-            if (curr == 1)
-                cout << "Already at the beginning of the list." << endl << endl;
-            else{
-                curr = 0;
-                cout << "Moved to the first position on the list." << endl << endl;
-            }
-        }
-
-        void moveToEnd(){
-            if (curr == curr_size)
-                cout << "Already at the end of the list." << endl << endl;
-            else{
-                curr = curr_size;
-                cout << "Moved to the last occupied position on the list." << endl << endl;
-            }
-        }
-
-        void clear(){
-            delete array;
-            curr = 0;
-            curr_size = 0;
-            max_size = initMaxSize;
-            array = new int[initMaxSize];
-        }
-
-        int find(int value){
-            for(int i = 0; i < curr_size; i++){
-                if(value == array[i]){
-                    cout << "The element " << value << " is in position " << i << "." << endl << endl;
-                    return 0;
-                }
-            }
-            
-            cout << "The element " << value << " isn't in the list." << endl << endl;
-
-            return 0;
-        }
-
-        void doubleListAppend(int element){
-            DEBUG{cout<<"AQUImax_size2: " << max_size << endl;}
-            cout << LIST_FULL;
-            //Copying array:
-            int array_copy[max_size + 1];
-            for (int i=0; i<curr_size; ++i){
-               array_copy[i] = array[i];
-            }
-            curr_size+=1;
-            array_copy[curr_size-1] = element;
-            DEBUG{
-                for (int l=0; l<curr_size; ++l){
-                    cout << "-" << array_copy[l] << "-" << endl;
-                }
-            }
-            //Creating new array
-            delete[] array;
-            max_size = 2*max_size;
-            array = new int[max_size]; //It can generated out of memory
-            for (int k=0; k<curr_size; ++k){
-                array[k] = array_copy[k];
-            }
-            cout << "Array doubled." << endl << endl;
-            return;
-        }
-
-        void append(int value){
-            if(curr_size == max_size){
-                doubleListAppend(value);
-            }else{
-                array[curr_size] = value;
-                curr_size += 1;
-            }
-        }
-
-        void ShowAll(){
-            cout << endl << "#####" << endl;
-            for (int i=0; i<curr_size; ++i){
-                cout << '-' << array[i] << '-' << endl;
-            }
-            cout << "#####" << endl << endl ;
-        }
+        List() {} // Default constructor
+        virtual ~List() {} // Base destructor
+        // Clear contents from the list, to make it empty.
+        virtual void clear() = 0;
+        // Insert an element at the current location.
+        // item: The element to be inserted
+        virtual void insert(const E& item) = 0;
+        // Append an element at the end of the list.
+        // item: The element to be appended.
+        virtual void append(const E& item) = 0;
+        // Remove and return the current element.
+        // Return: the element that was removed.
+        virtual E remove() = 0;
+        // Set the current position to the start of the list
+        virtual void moveToStart() = 0;
+        // Set the current position to the end of the list
+        virtual void moveToEnd() = 0;
+        // Move the current position one step left. No change
+        // if already at beginning.
+        virtual void prev() = 0;
+        // Move the current position one step right. No change
+        // if already at end.
+        virtual void next() = 0;
+        // Return: The number of elements in the list.
+        virtual int length() const = 0;
+        // Return: The position of the current element.
+        virtual int currPos() const = 0;
+        // Set current position.
+        // pos: The position to make current.
+        virtual void moveToPos(int pos) = 0;
+        // Return: The current element.
+        virtual const E& getValue() const = 0;
 };
 
-template <typename E>
-class LList: public List{
-    // E LList(){
-
-    // };
-    private:
-        bool status_list;
-        int *array;
-        int len2;
+template <typename E> class Link {
     public:
-        LList(int len){
-            len2 = len;
-            array = (int *)malloc(sizeof(List(len2)));
-            if (array==NULL){
-                cout << "Memory full. No space in the memory." << endl;
-                status_list = false;
+    E element; // Value for this node
+    Link *next; // Pointer to next node in list
+    // Constructors
+    Link(const E& elemval, Link* nextval = NULL){
+        element = elemval; next = nextval; 
+        }
+    Link(Link* nextval =NULL) { next = nextval; }
+};
+
+// Linked list implementation
+template <typename E> class LList: public List<E> {
+    private:
+        Link<E>* head; // Pointer to list header
+        Link<E>* tail; // Pointer to last element
+        Link<E>* curr; // Access to current element
+        int cnt; // Size of list
+        void init() { // Intialization helper method
+            curr = tail = head = new Link<E>;
+            cnt = 0;
+        }
+        void removeall() { // Return link nodes to free store
+            while(head != NULL) {
+                curr = head;
+                head = head->next;
+                delete curr;
             }
-            cout << "Array created." << endl;
-            status_list = true;
         }
-        ~LList(){
-            free(array);
+    public:
+        LList(int size) { init(); } // Constructor
+        ~LList() { removeall(); } // Destructor
+        void print() const; // Print list contents
+        void clear() { removeall(); init(); } // Clear list
+        // Insert "it" at current position
+        void insert(const E& it) {
+            curr->next = new Link<E>(it, curr->next);
+            if (tail == curr) tail = curr->next; // New tail
+                cnt++;
         }
-        bool Status(){
-            return status_list;
+        void append(const E& it) { // Append "it" to list
+            tail = tail->next = new Link<E>(it, NULL);
+            cnt++;
+        }
+        // Remove and return current element
+        E remove() {
+            E it = curr->next->element; // Remember value
+            Link<E>* ltemp = curr->next; // Remember link node
+            if (tail == curr->next) tail = curr; // Reset tail
+                curr->next = curr->next->next; // Remove from list
+            delete ltemp; // Reclaim space
+            cnt--; // Decrement the count
+            return it;
+        }
+        void moveToStart() // Place curr at list start
+            { curr = head; }
+        void moveToEnd() // Place curr at list end
+            { curr = tail; }
+        // Move curr one step left; no change if already at front
+        void prev() {
+            if (curr == head) return; // No previous element
+            Link<E>* temp = head;
+        // March down list until we find the previous element
+            while (temp->next!=curr) temp=temp->next;
+                curr = temp;
+        }
+        // Move curr one step right; no change if already at end
+        void next(){ 
+            if (curr != tail) 
+                curr = curr->next; 
+        }
+        int length() const { return cnt; } // Return length
+        // Return the position of the current element
+        int currPos() const {
+            Link<E>* temp = head;
+            int i;
+            for (i=0; curr != temp; i++)
+                temp = temp->next;
+            return i;
+        }
+        // Move down list to "pos" position
+        void moveToPos(int pos) {
+            curr = head;
+            for(int i=0; i<pos; i++) curr = curr->next;
+        }
+        const E& getValue() const { // Return current element
+            return curr->next->element;
         }
 };
 
@@ -338,7 +226,6 @@ class GraphM : public Graph{
         }
 
         void setEdge(int v1, int v2, int wt){
-            //Assert(wt > 0, "Illegal weight value");
             if(matrix[v1][v2] == 0) numEdge++;
             matrix[v1][v2] = wt;
         }
@@ -377,15 +264,16 @@ class GraphL : public Graph{
 
         void init(int n){
             int i;
-            numVertex = 0;
+            numVertex = n;
             numEdge = 0;
             mark = new int[n];
             for(i = 0; i < numVertex; i++){                
-                mark[i] = UNVISITED ////Tem escrito assim no livro mas não compila
+                mark[i] = UNVISITED; ////Tem escrito assim no livro mas não compila
             }
             vertex = (List<Edge>**) new List<Edge>*[numVertex];
-            for(i = 0; i < numVertex; i++)
-                vertex[i] = new LList<Edge>();
+            for(i = 0; i < numVertex; i++){
+                vertex[i] = new LList<Edge>(1);
+            }
         }
 
         int n() {return numVertex;}
@@ -403,7 +291,7 @@ class GraphL : public Graph{
         int next(int v, int w){
             Edge it;
             if(isEdge(v, w)){
-                if((vertex[v]->currPos()+1) < vertex[v]->lenght()){
+                if((vertex[v]->currPos()+1) < vertex[v]->length()){
                     vertex[v] -> next();
                     it = vertex[v] -> getValue();
                     return it.vertex();
@@ -464,44 +352,39 @@ class GraphL : public Graph{
 
 
 //Class graph with list adjacency and algorithm of Dijsktra:
-class GraphLDijsktra: public GraphL{
-    public:
-        int minVertex(Graph* G, int* D) { // Find min cost vertex
-            int i, v = -1;
-            // Initialize v to some unvisited vertex
-            for (i=0; i<G->n(); i++)
-                if (G->getMark(i) == UNVISITED) { v = i; break; }
-            for (i++; i<G->n(); i++) // Now find smallest D value
-                if ((G->getMark(i) == UNVISITED) && (D[i] < D[v]))
-                    v = i;
-            return v;
-        }
+int minVertexList(Graph* G, int* D) { // Find min cost vertex
+    int i, v = -1;
+    // Initialize v to some unvisited vertex
+    for (i=0; i<G->n(); i++)
+        if (G->getMark(i) == UNVISITED) { v = i; break; }
+    for (i++; i<G->n(); i++) // Now find smallest D value
+        if ((G->getMark(i) == UNVISITED) && (D[i] < D[v]))
+            v = i;
+    return v;
+}
 
-        // Compute shortest path distances from "s".
-        // Return these distances in "D".
-        void Dijkstra(Graph* G, int* D, int s) {
-            int i, v, w;
-            for (int i=0; i<G->n(); i++)
-                // Initialize
-                D[i] = INFINITY;
-            D[0] = 0;
-            for (i=0; i<G->n(); i++) {
-                // Process the vertices
-                v = minVertex(G, D);
-                if (D[v] == INFINITY) return; // Unreachable vertices
-                G->setMark(v, VISITED);
-                for (w=G->first(v); w<G->n(); w = G->next(v,w))
-                    if (D[w] > (D[v] + G->weight(v, w)))
-                    D[w] = D[v] + G->weight(v, w);
-            }
-        }
-};
-
+// Compute shortest path distances from "s".
+// Return these distances in "D".
+void DijkstraList(Graph* G, int* D, int s) {
+    int i, v, w;
+    for (int i=0; i<G->n(); i++)
+        // Initialize
+        D[i] = INFINITY;
+    D[0] = 0;
+    for (i=0; i<G->n(); i++) {
+        // Process the vertices
+        v = minVertexList(G, D);
+        if (D[v] == INFINITY) return; // Unreachable vertices
+        G->setMark(v, VISITED);
+        for (w=G->first(v); w<G->n(); w = G->next(v,w))
+            if (D[w] > (D[v] + G->weight(v, w)))
+                D[w] = D[v] + G->weight(v, w);
+    }
+}
 
 //class graph with implementation of matrix adjacency of Dijsktra:
-class GraphMDijsktra: public GraphM{
-    public:
-        int minVertex(Graph* G, int* D) { // Find min cost vertex
+
+        int minVertexMatrix(Graph* G, int* D) { // Find min cost vertex
             int i, v = -1;
             // Initialize v to some unvisited vertex
             for (i=0; i<G->n(); i++)
@@ -514,7 +397,7 @@ class GraphMDijsktra: public GraphM{
 
         // Compute shortest path distances from "s".
         // Return these distances in "D".
-        void Dijkstra(Graph* G, int* D, int s) {
+        void DijkstraMatrix(Graph* G, int* D, int s) {
             int i, v, w;
             for (int i=0; i<G->n(); i++)
                 // Initialize
@@ -522,7 +405,7 @@ class GraphMDijsktra: public GraphM{
             D[0] = 0;
             for (i=0; i<G->n(); i++) {
                 // Process the vertices
-                v = minVertex(G, D);
+                v = minVertexMatrix(G, D);
                 if (D[v] == INFINITY) return; // Unreachable vertices
                 G->setMark(v, VISITED);
                 for (w=G->first(v); w<G->n(); w = G->next(v,w))
@@ -530,12 +413,29 @@ class GraphMDijsktra: public GraphM{
                     D[w] = D[v] + G->weight(v, w);
             }
         }
-};
 
 
 int main(){
+    cout << "ola" << endl;
+    //GraphM grafoM(4);
+    GraphL grafoL(4);
+    //cout << grafoL.n() << endl;
+    //cout << grafoL.e() << endl << endl;
+    grafoL.setEdge(0, 1, 7);
+    grafoL.setEdge(1, 2, 1);
+    grafoL.setEdge(2, 3, 2);
+    grafoL.setEdge(3, 0, 5);
+    grafoL.setEdge(0, 2, 4);
+    //cout << grafoL.first(1) << endl;
+    //cout << grafoL.next(2, 3) << endl << endl;
+    int array[5];
+    DijkstraList(&grafoL, array, 0);
 
-    int opt = 1;
+    for(int i = 0; i<5; i++){
+        cout << array[i] << endl;
+    }
+
+    /*int opt = 1;
     while (opt!=0){
         cout<<"1 - Test graph with matrix of adjacency."<<endl;
         cout<<"2 - Test graph with list of adjacency."<<endl;
@@ -549,7 +449,7 @@ int main(){
         if (opt==1){
             return 1;
         }
-    }
+    }*/
 
 
     return 0;
