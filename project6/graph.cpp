@@ -4,8 +4,8 @@
     3 - usar grafos esparsos e densos
 */  
 #include <iostream>
-#define VISITED true
-#define UNVISITED false
+#define VISITED 1
+#define UNVISITED 0
 #define INFINITY 31  //aqui n sei qual é o valor desta diretriz, mas coloquei 1
                     //porque em outro momento do código é dita como 0
 #define LIST_EMPTY "List empty."
@@ -255,12 +255,12 @@ class GraphL : public Graph{
             init(numVert);
         }
 
-        ~GraphL(){
-            delete [] mark;
-            for(int i = 0; i < numVertex; i++) 
-                delete [] vertex[i];
-            delete [] vertex;
-        }
+        // ~GraphL(){
+        //     delete [] mark;
+        //     for(int i = 0; i < numVertex; i++) 
+        //         delete [] vertex[i];
+        //     delete [] vertex;
+        // }
 
         void init(int n){
             int i;
@@ -432,24 +432,26 @@ int main(){
     DijkstraList(&grafoL, array, 0);
 
     for(int i = 0; i<5; i++){
+        cout << "AQUI" << endl;
         cout << array[i] << endl;
     }
-
-    /*int opt = 1;
-    while (opt!=0){
-        cout<<"1 - Test graph with matrix of adjacency."<<endl;
-        cout<<"2 - Test graph with list of adjacency."<<endl;
-        cout<<"3 - Test graph with matrix of adjacency and algorithm of Dijsktra."<<endl;
-        cout<<"4 - Test graph with list of adjacency and algorithm of Dijsktra."<<endl;
-        cout<<"5 - Test with graph sparse."<<endl;
-        cout<<"6 - Test with graph dense."<<endl;
-        cout<<"0 - Exit."<<endl;
-        cout << "Digit one option: ";
-        cin >> opt;
-        if (opt==1){
-            return 1;
-        }
-    }*/
+    cout << "final"<<endl;
+    // return 0;
+    // int opt = 1;
+    // while (opt!=0){
+    //     cout<<"1 - Test graph with matrix of adjacency."<<endl;
+    //     cout<<"2 - Test graph with list of adjacency."<<endl;
+    //     cout<<"3 - Test graph with matrix of adjacency and algorithm of Dijsktra."<<endl;
+    //     cout<<"4 - Test graph with list of adjacency and algorithm of Dijsktra."<<endl;
+    //     cout<<"5 - Test with graph sparse."<<endl;
+    //     cout<<"6 - Test with graph dense."<<endl;
+    //     cout<<"0 - Exit."<<endl;
+    //     cout << "Digit one option: ";
+    //     cin >> opt;
+    //     if (opt==1){
+    //         return 1;
+    //     }
+    // }
 
 
     return 0;
