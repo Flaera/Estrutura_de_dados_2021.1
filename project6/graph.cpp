@@ -345,52 +345,54 @@ class GraphL : public Graph{
             }
             else return 0;
         }
-
         int getMark(int v) {return mark[v];}
         void setMark(int v, int val) {mark[v] = val;}
 };
 
+int minUnvisited(Graph* G, int* D){
+    int i, v = -1;
+    // Initialize v to some unvisited vertex
+    for (i=0; i<G->n(); i++){        
+        if (G->getMark(i) == UNVISITED) { v = i; break; }
+    }
+    for (i++; i<G->n(); i++){   // Now find smallest D value
+        if ((G->getMark(i) == UNVISITED) && (D[i] < D[v])){            
+            v = i;
+        }
+    }
+    return v;
+}
+
 //Function to find shortest path between two vertices.
 //It's usable in the two graphs implementations.
 void DijkstraList(Graph* G, int* D, int start, int destination){
+    //Inicializando as distancias e as marcações de visita para os vertices
     for (int i = 0; i < G -> n(); i++){
-        D[i] = INFINITY;
+        D[i] = INFINITY;            
         G -> setMark(i, UNVISITED);
     }
-    int i = 0;
-    D[start] = 0;
-    //cout << D[start] << " e " << start << endl;
+
+    D[start] = 0; //A distancia para o vertice de inicio é 0, já que já estamos neste vertice
+    int v;        //Vertice que será visitado e faremos os calculos das distancias
 
     while (G -> getMark(destination) == UNVISITED){
-        int v;
-        if(i == 0) {v = start;}
-        else{
-            v = G -> first(v);
-        }
+        v = minUnvisited(G, D);
+
         G -> setMark(v, VISITED);
-        //if (D[v] == INFINITY) break; // Unreachable vertices
-        //cout << "oi " << D[v] << endl;
-        for(int j = G -> first(v); j < G -> n(); j = G ->next(v, j)){
-            //cout << "fala for =" << j << endl;
-            //cout << D[v] + G -> weight(v, j) <<endl;
+        
+        for(int j = G -> first(v); j < G -> n(); j = G -> next(v, j)){
             if((D[v] + G -> weight(v, j)) < D[j]){
-                //cout << "fala if\n";
                 D[j] = (D[v] + G -> weight(v, j));
             }
         }
-        //cout << i<< " i++\n";
-        i++;
     }
-    //cout << "fim\n";
-
 }
 
 int main(){
     cout << "ola" << endl;
     //GraphM grafoM(4);
-    GraphM grafoL(9);
-    //cout << grafoL.n() << endl;
-    //cout << grafoL.e() << endl << endl;
+    GraphL grafoL(9);
+    
     grafoL.setEdge(0, 7, 8);
     grafoL.setEdge(0, 1, 4);
     grafoL.setEdge(7, 6, 1);
@@ -404,15 +406,16 @@ int main(){
     grafoL.setEdge(2, 3, 7);
     grafoL.setEdge(2, 5, 4);
     grafoL.setEdge(3, 4, 9);
-    //cout << grafoL.first(1) << endl;
-    //cout << grafoL.next(2, 3) << endl << endl;
-    int array[9];
-    DijkstraList(&grafoL, array, 0, 4);
 
+    int array[9], start = 0, destination = 4;
+    
+    DijkstraList(&grafoL, array, 0, destination);
+    cout << endl;
     for(int i = 0; i<9; i++){
-        //cout << "AQUI" << endl;
-        cout << array[i] << endl;
+        cout << "Distance of vertex " << i << " to start vertex is: " << array[i] << endl;
     }
+
+    cout << endl << "The minimum length from start to destination is: " << array[destination] << endl;
     //cout << "final"<<endl;
     // return 0;
     // int opt = 1;
