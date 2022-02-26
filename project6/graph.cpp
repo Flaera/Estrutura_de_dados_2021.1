@@ -6,8 +6,8 @@
 #include <iostream>
 #define VISITED 1
 #define UNVISITED 0
-#define INFINITY 31  //aqui n sei qual é o valor desta diretriz, mas coloquei 1
-                    //porque em outro momento do código é dita como 0
+#define INFINITY 5000 //Este valor representa uma distancia infinita entre 2 vértices, pois, 
+                      //de início o Algoritmo de Dijkstra não sabe a distancia entre os vértices
 #define LIST_EMPTY "List empty."
 #define LIST_FULL "List fully."
 #define DEBUG if(0)
@@ -350,92 +350,70 @@ class GraphL : public Graph{
         void setMark(int v, int val) {mark[v] = val;}
 };
 
-
-//Class graph with list adjacency and algorithm of Dijsktra:
-int minVertexList(Graph* G, int* D) { // Find min cost vertex
-    int i, v = -1;
-    // Initialize v to some unvisited vertex
-    for (i=0; i<G->n(); i++)
-        if (G->getMark(i) == UNVISITED) { v = i; break; }
-    for (i++; i<G->n(); i++) // Now find smallest D value
-        if ((G->getMark(i) == UNVISITED) && (D[i] < D[v]))
-            v = i;
-    return v;
-}
-
-// Compute shortest path distances from "s".
-// Return these distances in "D".
-void DijkstraList(Graph* G, int* D, int s) {
-    int i, v, w;
-    for (int i=0; i<G->n(); i++)
-        // Initialize
+//Function to find shortest path between two vertices.
+//It's usable in the two graphs implementations.
+void DijkstraList(Graph* G, int* D, int start, int destination){
+    for (int i = 0; i < G -> n(); i++){
         D[i] = INFINITY;
-    D[0] = 0;
-    for (i=0; i<G->n(); i++) {
-        // Process the vertices
-        v = minVertexList(G, D);
-        if (D[v] == INFINITY) return; // Unreachable vertices
-        G->setMark(v, VISITED);
-        for (w=G->first(v); w<G->n(); w = G->next(v,w))
-            if (D[w] > (D[v] + G->weight(v, w)))
-                D[w] = D[v] + G->weight(v, w);
+        G -> setMark(i, UNVISITED);
     }
-}
+    int i = 0;
+    D[start] = 0;
+    //cout << D[start] << " e " << start << endl;
 
-//class graph with implementation of matrix adjacency of Dijsktra:
-
-        int minVertexMatrix(Graph* G, int* D) { // Find min cost vertex
-            int i, v = -1;
-            // Initialize v to some unvisited vertex
-            for (i=0; i<G->n(); i++)
-                if (G->getMark(i) == UNVISITED) { v = i; break; }
-            for (i++; i<G->n(); i++) // Now find smallest D value
-                if ((G->getMark(i) == UNVISITED) && (D[i] < D[v]))
-                    v = i;
-            return v;
+    while (G -> getMark(destination) == UNVISITED){
+        int v;
+        if(i == 0) {v = start;}
+        else{
+            v = G -> first(v);
         }
-
-        // Compute shortest path distances from "s".
-        // Return these distances in "D".
-        void DijkstraMatrix(Graph* G, int* D, int s) {
-            int i, v, w;
-            for (int i=0; i<G->n(); i++)
-                // Initialize
-                D[i] = INFINITY;
-            D[0] = 0;
-            for (i=0; i<G->n(); i++) {
-                // Process the vertices
-                v = minVertexMatrix(G, D);
-                if (D[v] == INFINITY) return; // Unreachable vertices
-                G->setMark(v, VISITED);
-                for (w=G->first(v); w<G->n(); w = G->next(v,w))
-                    if (D[w] > (D[v] + G->weight(v, w)))
-                    D[w] = D[v] + G->weight(v, w);
+        G -> setMark(v, VISITED);
+        //if (D[v] == INFINITY) break; // Unreachable vertices
+        //cout << "oi " << D[v] << endl;
+        for(int j = G -> first(v); j < G -> n(); j = G ->next(v, j)){
+            //cout << "fala for =" << j << endl;
+            //cout << D[v] + G -> weight(v, j) <<endl;
+            if((D[v] + G -> weight(v, j)) < D[j]){
+                //cout << "fala if\n";
+                D[j] = (D[v] + G -> weight(v, j));
             }
         }
+        //cout << i<< " i++\n";
+        i++;
+    }
+    //cout << "fim\n";
 
+}
 
 int main(){
     cout << "ola" << endl;
     //GraphM grafoM(4);
-    GraphL grafoL(4);
+    GraphM grafoL(9);
     //cout << grafoL.n() << endl;
     //cout << grafoL.e() << endl << endl;
-    grafoL.setEdge(0, 1, 7);
-    grafoL.setEdge(1, 2, 1);
-    grafoL.setEdge(2, 3, 2);
-    grafoL.setEdge(3, 0, 5);
-    grafoL.setEdge(0, 2, 4);
+    grafoL.setEdge(0, 7, 8);
+    grafoL.setEdge(0, 1, 4);
+    grafoL.setEdge(7, 6, 1);
+    grafoL.setEdge(1, 7, 11);
+    grafoL.setEdge(1, 2, 8);
+    grafoL.setEdge(6, 5, 2);
+    grafoL.setEdge(5, 3, 14);
+    grafoL.setEdge(5, 4, 10);
+    grafoL.setEdge(7, 8, 7);
+    grafoL.setEdge(6, 8, 6);
+    grafoL.setEdge(2, 3, 7);
+    grafoL.setEdge(2, 5, 4);
+    grafoL.setEdge(3, 4, 9);
     //cout << grafoL.first(1) << endl;
     //cout << grafoL.next(2, 3) << endl << endl;
-    int array[5];
-    DijkstraList(&grafoL, array, 0);
+    int array[9];
+    DijkstraList(&grafoL, array, 0, 4);
 
-    for(int i = 0; i<5; i++){
-        cout << "AQUI" << endl;
+    for(int i = 0; i<9; i++){
+        //cout << "AQUI" << endl;
         cout << array[i] << endl;
     }
-    cout << "final"<<endl;
+    //cout << "final"<<endl;
     // return 0;
     // int opt = 1;
     // while (opt!=0){
