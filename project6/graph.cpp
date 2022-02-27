@@ -416,17 +416,17 @@ class DijkElem {
 };
 
 
-class DDComp{
+template <typename D> class DDComp{
     public:
-        bool prior(DijkElem a, DijkElem b){
-            if (a.vertex>b.vertex){return true;}
+        bool prior(D a, D b){
+            if (a>b){return true;}
             return false;
         }
 };
 
 
 // Heap class
-template <typename E, typename Comp> class heap {
+template <typename E, typename DDComp> class heap {
     private:
         E* Heap;
         // Pointer to the heap array
@@ -439,10 +439,10 @@ template <typename E, typename Comp> class heap {
             while (!isLeaf(pos)) { // Stop if pos is a leaf
                 int j = leftchild(pos); int rc = rightchild(pos);
                 cout << "heap rc: "<<Heap[rc]<<", heap j: "<<Heap[j] << endl;
-                if ((rc < n) && Comp::prior(Heap[rc], Heap[j]))
+                if ((rc < n) && DDComp::prior(Heap[rc], Heap[j]))
                     j = rc;
                 // Set j to greater child’s value
-                if (Comp::prior(Heap[pos], Heap[j])) return; // Done
+                if (DDComp::prior(Heap[pos], Heap[j])) return; // Done
                 swap(Heap, pos, j);
                 pos = j;
                 // Move down
@@ -476,7 +476,7 @@ template <typename E, typename Comp> class heap {
             // Start at end of heap
             // Now sift up until curr’s parent > curr
             while ((curr!=0) &&
-                        (Comp::prior(Heap[curr], Heap[parent(curr)]))) {
+                        (DDComp::prior(Heap[curr], Heap[parent(curr)]))) {
                 swap(Heap, curr, parent(curr));
                 curr = parent(curr);
                 }
@@ -499,7 +499,7 @@ template <typename E, typename Comp> class heap {
                 swap(Heap, pos, --n);
                 // Swap with last value
                 while ((pos != 0) &&
-                           (Comp::prior(Heap[pos], Heap[parent(pos)]))) {
+                           (DDComp::prior(Heap[pos], Heap[parent(pos)]))) {
                     swap(Heap, pos, parent(pos)); // Push up large key
                     pos = parent(pos);
                 }
