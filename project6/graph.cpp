@@ -388,6 +388,168 @@ void DijkstraList(Graph* G, int* D, int start, int destination){
     }
 }
 
+
+// Assert: If "val" is false, print a message and terminate
+// the program
+void Assert(bool val, string s) {
+    if (!val) { // Assertion failed -- close the program
+        cout << "Assertion Failed: " << s << endl;
+        exit(-1);
+    }
+}
+
+
+// Swap two elements in a generic array
+template<typename E>
+    inline void swap(E A[], int i, int j) {
+        E temp = A[i];
+        A[i] = A[j];
+        A[j] = temp;
+}
+
+
+class DijkElem {
+    public:
+        int vertex, distance;
+        DijkElem() { vertex = -1; distance = -1; }
+        DijkElem(int v, int d) { vertex = v; distance = d; }
+};
+
+
+class DDComp{
+    public:
+        bool prior(DijkElem a, DijkElem b){
+            if (a.vertex>b.vertex){return true;}
+            return false;
+        }
+};
+
+
+// Heap class
+template <typename E, typename Comp> class heap {
+    private:
+        E* Heap;
+        // Pointer to the heap array
+        int maxsize;
+        // Maximum size of the heap
+        int n;
+        // Number of elements now in the heap
+        // Helper function to put element in its correct place
+        void siftdown(int pos) {
+            while (!isLeaf(pos)) { // Stop if pos is a leaf
+                int j = leftchild(pos); int rc = rightchild(pos);
+                cout << "heap rc: "<<Heap[rc]<<", heap j: "<<Heap[j] << endl;
+                if ((rc < n) && Comp::prior(Heap[rc], Heap[j]))
+                    j = rc;
+                // Set j to greater child’s value
+                if (Comp::prior(Heap[pos], Heap[j])) return; // Done
+                swap(Heap, pos, j);
+                pos = j;
+                // Move down
+            }
+        }
+    public:
+        heap(E* h, int num, int max)
+        // Constructor
+            { Heap = h; n = num; maxsize = max; buildHeap(); }
+        int size() const
+        // Return current heap size
+            { return n; }
+        bool isLeaf(int pos) const // True if pos is a leaf
+            { return (pos >= n/2) && (pos < n); }
+        int leftchild(int pos) const
+            { return 2*pos + 1; }
+        // Return leftchild position
+        int rightchild(int pos) const
+            { return 2*pos + 2; }
+        // Return rightchild position
+        int parent(int pos) const // Return parent position
+            { return (pos-1)/2; }
+        void buildHeap()
+        // Heapify contents of Heap
+            { for (int i=n/2-1; i>=0; i--) siftdown(i); }
+        // Insert "it" into the heap
+        void insert(const E& it) {
+            Assert(n < maxsize, "Heap is full");
+            int curr = n++;
+            Heap[curr] = it;
+            // Start at end of heap
+            // Now sift up until curr’s parent > curr
+            while ((curr!=0) &&
+                        (Comp::prior(Heap[curr], Heap[parent(curr)]))) {
+                swap(Heap, curr, parent(curr));
+                curr = parent(curr);
+                }
+        }
+        // Remove first value
+        E removefirst() {
+            Assert (n > 0, "Heap is empty");
+            swap(Heap, 0, --n);
+            // Swap first with last value
+            if (n != 0) siftdown(0); // Siftdown new root val
+            return Heap[n];
+            // Return deleted value
+        }
+        // Remove and return element at specified position
+        E remove(int pos) {
+            Assert((pos >= 0) && (pos < n), "Bad position");
+            if (pos == (n-1)) n--; // Last element, no work to do
+            else
+            {
+                swap(Heap, pos, --n);
+                // Swap with last value
+                while ((pos != 0) &&
+                           (Comp::prior(Heap[pos], Heap[parent(pos)]))) {
+                    swap(Heap, pos, parent(pos)); // Push up large key
+                    pos = parent(pos);
+                }
+                if (n != 0) siftdown(pos);
+            // Push down small key
+            }
+            return Heap[n];
+        }
+};
+
+
+// Dijkstra’s shortest paths algorithm with priority queue
+void DijkstraListAdj(Graph* G, int* D, int s, int destination) {
+    int i, v, w;
+    // v is current vertex
+    DijkElem temp;
+    DijkElem E[G->e()];
+    // Heap array with lots of space
+    temp.distance = 0; temp.vertex = s;
+    E[0] = temp;
+    // Initialize heap array
+    heap<DijkElem, DDComp> H(E, 1, G->e()); // Create heap
+    // vector<int> H;
+    // for (int j=0; j<G->e(); ++j){H[0]=1;}
+    // make_heap(H.begin(), H.end());
+    for (int i=0; i<G->n(); i++)
+        // Initialize
+        D[i] = INFINITY;
+    D[0] = 0;
+    for (i=0; i<G->n(); i++) {
+    // Now, get distances
+        do {
+        if (H.size() == 0) return; // Nothing to remove
+        temp = H.removefirst();
+        v = temp.vertex;
+        } while (G->getMark(v) == VISITED);
+        G->setMark(v, VISITED);
+        if (D[v] == INFINITY) return;
+        // Unreachable vertices
+        for (w=G->first(v); w<G->n(); w = G->next(v,w))
+            if (D[w] > (D[v] + G->weight(v, w))) { // Update D
+                D[w] = D[v] + G->weight(v, w);
+                temp.distance = D[w]; temp.vertex = w;
+                H.insert(temp);
+                // Insert new distance in heap
+            }
+    }
+}
+
+
 int main(){
     cout << "ola" << endl;
     //GraphM grafoM(4);
@@ -409,7 +571,7 @@ int main(){
 
     int array[9], start = 0, destination = 4;
     
-    DijkstraList(&grafoL, array, 0, destination);
+    DijkstraListAdj(&grafoL, array, start, destination);
     cout << endl;
     for(int i = 0; i<9; i++){
         cout << "Distance of vertex " << i << " to start vertex is: " << array[i] << endl;
