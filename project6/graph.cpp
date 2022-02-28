@@ -416,10 +416,11 @@ class DijkElem {
 };
 
 
-template <typename D> class DDComp{
+template <typename D>class DDComp{
     public:
+        //DDComp(D a, D b){}
         bool prior(D a, D b){
-            if (a>b){return true;}
+            if (a > b){return true;}
             return false;
         }
 };
@@ -521,7 +522,7 @@ void DijkstraListAdj(Graph* G, int* D, int s, int destination) {
     temp.distance = 0; temp.vertex = s;
     E[0] = temp;
     // Initialize heap array
-    heap<DijkElem, DDComp> H(E, 1, G->e()); // Create heap
+    heap<DijkElem, DDComp<DijkElem>> H(E, 1, G->e()); // Create heap
     // vector<int> H;
     // for (int j=0; j<G->e(); ++j){H[0]=1;}
     // make_heap(H.begin(), H.end());

@@ -486,7 +486,7 @@ class GrafoWithDijkstraPriorQueue{
 };
 
 
-class GrafoWithDijkstraPriorQueueMatrixAdj: public GraphM {
+class GrafoWithDijkstraPriorQueueMatrixAdj{
     private:
         int V; // número de vértices
 
@@ -600,7 +600,7 @@ int main(){
         cout << "Digit one option: ";
         cin >> opt;
         if (opt==1){
-            GraphM graph_m;
+            GraphM graph_m(9);
 
             graph_m.setEdge(0, 7, 8);
             graph_m.setEdge(0, 1, 4);
