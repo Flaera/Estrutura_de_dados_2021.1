@@ -220,6 +220,7 @@ class GraphM : public Graph{
                 if(matrix[v][i] != 0) return i;
             return numVertex;
         }
+        
 
         int next(int v, int w){
             for(int i = w + 1; i < numVertex; i++)
@@ -511,20 +512,21 @@ class GrafoWithDijkstraPriorQueueMatrixAdj{
         // adiciona uma aresta ao grafo de v1 à v2
         void addAresta(int v1, int v2, int custo)
         {
-            adj[v1].push_back(make_pair(v2, custo));
+            //adj[v1].push_back(make_pair(v2, custo));
+            graph->setEdge(v1, v2, custo);
         }
 
         // algoritmo de Dijkstra
         int dijkstra(int orig, int dest)
         {
             // vetor de distâncias
-            int dist[V];
+            int dist[V][V];
 
             /*
             vetor de visitados serve para caso o vértice já tenha sido
             expandido (visitado), não expandir mais
             */
-            int visitados[V];
+            int visitados[V][V];
 
             // fila de prioridades de pair (distancia, vértice)
             priority_queue < pair<int, int>,
@@ -533,16 +535,19 @@ class GrafoWithDijkstraPriorQueueMatrixAdj{
             // inicia o vetor de distâncias e visitados
             for(int i = 0; i < V; i++)
             {
-                dist[i] = INFINITY;
-                visitados[i] = false;
+                for (int j=0; j < V; j++)
+                {
+                    dist[i][j] = INFINITY;
+                    visitados[i][j] = false;
+                }
             }
 
             // a distância de orig para orig é 0
-            dist[orig] = 0;
+            dist[orig][dest] = 0;
 
             // insere na fila
-            pq.push(make_pair(dist[orig], orig));
-
+            pq.push(make_pair(dist[orig][dest], orig));
+            
             // loop do algoritmo
             while(!pq.empty())
             {
@@ -551,123 +556,156 @@ class GrafoWithDijkstraPriorQueueMatrixAdj{
                 pq.pop(); // remove da fila
 
                 // verifica se o vértice não foi expandido
-                if(visitados[u] == false)
-                {
-                    // marca como visitado
-                    visitados[u] = true;
-
-                    list<pair<int, int> >::iterator it;
-
-                    // percorre os vértices "v" adjacentes de "u"
-                    for(it = adj[u].begin(); it != adj[u].end(); it++)
+                for (int h=0; h<V; h++){
+                    if(visitados[u][h] == false)
                     {
-                        // obtém o vértice adjacente e o custo da aresta
-                        int v = it->first;
-                        int custo_aresta = it->second;
+                        // marca como visitado
+                        visitados[u][h] = true;
 
-                        // relaxamento (u, v)
-                        if(dist[v] > (dist[u] + custo_aresta))
+                        //list<pair<int, int> >::iterator it;
+
+                        // percorre os vértices "v" adjacentes de "u"
+                        //for(it = adj[u].begin(); it != adj[u].end(); it++)
+                        for (int l=0; l<V; l++)
                         {
-                            // atualiza a distância de "v" e insere na fila
-                            dist[v] = dist[u] + custo_aresta;
-                            pq.push(make_pair(dist[v], v));
+                            // obtém o vértice adjacente e o custo da aresta
+                            int v = graph->first(u);
+                            int custo_aresta = graph->e();//it->second;
+
+                            // relaxamento (u, v)
+                            if(dist[v][l] > (dist[u][l] + custo_aresta))
+                            {
+                                // atualiza a distância de "v" e insere na fila
+                                dist[v][l] = dist[u][l] + custo_aresta;
+                                pq.push(make_pair(dist[v][l], v));
+                            }
                         }
                     }
+                }
+                for (int i=0; i<V; i++){
+                    for (int j=0; j<V; j++){
+                        cout <<"-"<<dist[i][j]<<"-";
+                    }
+                    cout << endl;
                 }
             }
 
             // retorna a distância mínima até o destino
-            return dist[dest];
+            return dist[orig][dest];
         }
 };
 
 
 
 int main(){
-    cout << "ola" << endl;
+    cout << "Ola!" << endl;
     //GraphM grafoM(4);
     //cout << "final"<<endl;
-    // return 0;
-    int opt = 1;
-    while (opt!=0){
-        cout<<"1 - Test graph with matrix of adjacency."<<endl;
-        cout<<"2 - Test graph with list of adjacency."<<endl;
-        cout<<"3 - Test graph with matrix of adjacency and algorithm of Dijsktra."<<endl;
-        cout<<"4 - Test graph with list of adjacency and algorithm of Dijsktra."<<endl;
-        cout<<"5 - Test with graph sparse."<<endl;
-        cout<<"6 - Test with graph dense."<<endl;
-        cout<<"0 - Exit."<<endl;
-        cout << "Digit one option: ";
-        cin >> opt;
-        if (opt==1){
-            GraphM graph_m(9);
+    
+    GrafoWithDijkstraPriorQueueMatrixAdj graph(9);
+    graph.addAresta(0, 7, 8);
+    graph.addAresta(0, 1, 4);
+    graph.addAresta(7, 6, 1);
+    graph.addAresta(1, 7, 11);
+    graph.addAresta(1, 2, 8);
+    graph.addAresta(6, 5, 2);
+    graph.addAresta(5, 3, 14);
+    graph.addAresta(5, 4, 10);
+    graph.addAresta(7, 8, 7);
+    graph.addAresta(6, 8, 6);
+    graph.addAresta(2, 3, 7);
+    graph.addAresta(2, 5, 4);
+    graph.addAresta(3, 4, 9);
+    int start = 0, destination = 4;
+    cout << graph.dijkstra(start, destination) << endl;
 
-            graph_m.setEdge(0, 7, 8);
-            graph_m.setEdge(0, 1, 4);
-            graph_m.setEdge(7, 6, 1);
-            graph_m.setEdge(1, 7, 11);
-            graph_m.setEdge(1, 2, 8);
-            graph_m.setEdge(6, 5, 2);
-            graph_m.setEdge(5, 3, 14);
-            graph_m.setEdge(5, 4, 10);
-            graph_m.setEdge(7, 8, 7);
-            graph_m.setEdge(6, 8, 6);
-            graph_m.setEdge(2, 3, 7);
-            graph_m.setEdge(2, 5, 4);
-            graph_m.setEdge(3, 4, 9);
+    // int opt = 1;
+    // while (opt!=0){
+    //     cout<<"1 - Test graph with matrix of adjacency."<<endl;
+    //     cout<<"2 - Test graph with list of adjacency."<<endl;
+    //     cout<<"3 - Test graph with matrix of adjacency and algorithm of Dijsktra."<<endl;
+    //     cout<<"4 - Test graph with list of adjacency and algorithm of Dijsktra."<<endl;
+    //     cout<<"5 - Test with graph sparse."<<endl;
+    //     cout<<"6 - Test with graph dense."<<endl;
+    //     cout<<"0 - Exit."<<endl;
+    //     cout << "Digit one option: ";
+    //     cin >> opt;
+    //     if (opt==1){
+    //         GraphM grafo_m(9);
 
+    //         grafo_m.setEdge(0, 7, 8);
+    //         grafo_m.setEdge(0, 1, 4);
+    //         grafo_m.setEdge(7, 6, 1);
+    //         grafo_m.setEdge(1, 7, 11);
+    //         grafo_m.setEdge(1, 2, 8);
+    //         grafo_m.setEdge(6, 5, 2);
+    //         grafo_m.setEdge(5, 3, 14);
+    //         grafo_m.setEdge(5, 4, 10);
+    //         grafo_m.setEdge(7, 8, 7);
+    //         grafo_m.setEdge(6, 8, 6);
+    //         grafo_m.setEdge(2, 3, 7);
+    //         grafo_m.setEdge(2, 5, 4);
+    //         grafo_m.setEdge(3, 4, 9);
 
-        }
-        else if (opt==2){}
-        else if (opt==3){
-            GraphL grafoL(9);
+    //         int array[9], start = 0, destination = 4;
             
-            grafoL.setEdge(0, 7, 8);
-            grafoL.setEdge(0, 1, 4);
-            grafoL.setEdge(7, 6, 1);
-            grafoL.setEdge(1, 7, 11);
-            grafoL.setEdge(1, 2, 8);
-            grafoL.setEdge(6, 5, 2);
-            grafoL.setEdge(5, 3, 14);
-            grafoL.setEdge(5, 4, 10);
-            grafoL.setEdge(7, 8, 7);
-            grafoL.setEdge(6, 8, 6);
-            grafoL.setEdge(2, 3, 7);
-            grafoL.setEdge(2, 5, 4);
-            grafoL.setEdge(3, 4, 9);
+    //         DijkstraList(&grafo_m, array, start, destination);
+    //         cout << endl;
+    //         for(int i = 0; i<9; i++){
+    //             cout << "Distance of vertex " << i << " to start vertex is: " << array[i] << endl;
+    //         }
 
-            int array[9], start = 0, destination = 4;
+    //         cout << endl << "The minimum length from start to destination is: " << array[destination] << endl;
+    //     }
+    //     else if (opt==2){
+    //         GraphL grafoL(9);
             
-            DijkstraList(&grafoL, array, start, destination);
-            cout << endl;
-            for(int i = 0; i<9; i++){
-                cout << "Distance of vertex " << i << " to start vertex is: " << array[i] << endl;
-            }
+    //         grafoL.setEdge(0, 7, 8);
+    //         grafoL.setEdge(0, 1, 4);
+    //         grafoL.setEdge(7, 6, 1);
+    //         grafoL.setEdge(1, 7, 11);
+    //         grafoL.setEdge(1, 2, 8);
+    //         grafoL.setEdge(6, 5, 2);
+    //         grafoL.setEdge(5, 3, 14);
+    //         grafoL.setEdge(5, 4, 10);
+    //         grafoL.setEdge(7, 8, 7);
+    //         grafoL.setEdge(6, 8, 6);
+    //         grafoL.setEdge(2, 3, 7);
+    //         grafoL.setEdge(2, 5, 4);
+    //         grafoL.setEdge(3, 4, 9);
 
-            cout << endl << "The minimum length from start to destination is: " << array[destination] << endl;
-        }
-        else if (opt==4){
-            GrafoWithDijkstraPriorQueue grafoLQ(9);
+    //         int array[9], start = 0, destination = 4;
             
-            grafoLQ.addAresta(0, 7, 8);
-            grafoLQ.addAresta(0, 1, 4);
-            grafoLQ.addAresta(7, 6, 1);
-            grafoLQ.addAresta(1, 7, 11);
-            grafoLQ.addAresta(1, 2, 8);
-            grafoLQ.addAresta(6, 5, 2);
-            grafoLQ.addAresta(5, 3, 14);
-            grafoLQ.addAresta(5, 4, 10);
-            grafoLQ.addAresta(7, 8, 7);
-            grafoLQ.addAresta(6, 8, 6);
-            grafoLQ.addAresta(2, 3, 7);
-            grafoLQ.addAresta(2, 5, 4);
-            grafoLQ.addAresta(3, 4, 9);
+    //         DijkstraList(&grafoL, array, start, destination);
+    //         cout << endl;
+    //         for(int i = 0; i<9; i++){
+    //             cout << "Distance of vertex " << i << " to start vertex is: " << array[i] << endl;
+    //         }
 
-            int start = 0, destination = 4;
-            int min = grafoLQ.dijkstra(start, destination);
-            cout << endl << "The minimum length from start to destination is: " << min << endl;
-        }
-    }
+    //         cout << endl << "The minimum length from start to destination is: " << array[destination] << endl;
+    //     }
+    //     else if (opt==3){
+    //         GrafoWithDijkstraPriorQueue grafoLQ(9);
+            
+    //         grafoLQ.addAresta(0, 7, 8);
+    //         grafoLQ.addAresta(0, 1, 4);
+    //         grafoLQ.addAresta(7, 6, 1);
+    //         grafoLQ.addAresta(1, 7, 11);
+    //         grafoLQ.addAresta(1, 2, 8);
+    //         grafoLQ.addAresta(6, 5, 2);
+    //         grafoLQ.addAresta(5, 3, 14);
+    //         grafoLQ.addAresta(5, 4, 10);
+    //         grafoLQ.addAresta(7, 8, 7);
+    //         grafoLQ.addAresta(6, 8, 6);
+    //         grafoLQ.addAresta(2, 3, 7);
+    //         grafoLQ.addAresta(2, 5, 4);
+    //         grafoLQ.addAresta(3, 4, 9);
+
+    //         int start = 0, destination = 4;
+    //         int min = grafoLQ.dijkstra(start, destination);
+    //         cout << endl << "The minimum length from start to destination is: " << min << endl;
+    //     }
+    // }
 
 
     return 0;
