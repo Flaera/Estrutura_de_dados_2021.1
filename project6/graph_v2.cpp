@@ -1,11 +1,19 @@
-/*  Os objetivos deste programa é testar a eficiência de grafos em 3 situações:
-    1 - grafo implementado com matriz de adjacência ou lista de adjacência;
-    2 - algoritmo de Djikstra utilizando fila de prioridade ou tabela de distância de vértices;
-    3 - usar grafos esparsos e densos
+/*  Desenvolvido por João Victor dos Santos Araujo e Rafael Luiz dos Santos
+
+    Referente ao projeto 11.3 do livro
+
+    Os objetivos deste programa são testar a eficiência de grafos em 3 situações:
+        1 - grafo implementado com matriz de adjacência ou lista de adjacência;
+        2 - algoritmo de Djikstra utilizando fila de prioridade ou tabela de distância de vértices;
+        3 - usar grafos esparsos e densos
+
+    Para tal medimos com o tempo de execução do algoritmo em cada uma das 8 situações
 */  
 #include <iostream>
 #include <list>
 #include <queue>
+#include <chrono>
+
 #define VISITED 1
 #define UNVISITED 0
 #define INFINITY 5000 //Este valor representa uma distancia infinita entre 2 vértices, pois, 
@@ -14,7 +22,8 @@
 #define LIST_FULL "List fully."
 #define DEBUG if(0)
 
-using namespace std;
+using namespace std; 
+using namespace chrono;
 
 //Classe abstrata de um grafo
 class Graph{
@@ -366,9 +375,9 @@ int minUnvisited(Graph* G, int* D){
     return v;
 }
 
-//Function to find shortest path between two vertices.
+//Function to find shortest path between two vertices using table vertex method.
 //It's usable in the two graphs implementations.
-void DijkstraList(Graph* G, int* D, int start, int destination){
+void DijkstraTable(Graph* G, int* D, int start, int destination){
     //Inicializando as distancias e as marcações de visita para os vertices
     for (int i = 0; i < G -> n(); i++){
         D[i] = INFINITY;            
@@ -392,43 +401,33 @@ void DijkstraList(Graph* G, int* D, int start, int destination){
 }
 
 
-class GrafoWithDijkstraPriorQueue{
+class DijkstraPriorQueueList{
     private:
         int V; // número de vértices
 
-        // ponteiro para um array contendo as listas de adjacências
-        list<pair<int, int> > * adj;
+        // ponteiro para um array contendo a lista de adjacência
+        list<pair<int, int> > *adj;
 
     public:
-
-        // construtor
-        GrafoWithDijkstraPriorQueue(int V)
-        {
+        DijkstraPriorQueueList(int V){
             this->V = V; // atribui o número de vértices
-
-            /*
-                cria as listas onde cada lista é uma lista de pairs
-                onde cada pair é formado pelo vértice destino e o custo
-            */
+            
+            //cria as listas onde cada lista é uma lista de pairs
+            //onde cada pair é formado pelo vértice destino e o custo
             adj = new list<pair<int, int> >[V];
         }
 
         // adiciona uma aresta ao grafo de v1 à v2
-        void addAresta(int v1, int v2, int custo)
-        {
+        void addAresta(int v1, int v2, int custo){
             adj[v1].push_back(make_pair(v2, custo));
         }
 
         // algoritmo de Dijkstra
-        int dijkstra(int orig, int dest)
-        {
-            // vetor de distâncias
-            int dist[V];
+        int dijkstra(int orig, int dest){
+            int dist[V];    // vetor de distâncias
 
-            /*
-            vetor de visitados serve para caso o vértice já tenha sido
-            expandido (visitado), não expandir mais
-            */
+            //vetor de visitados serve para caso o vértice já tenha sido
+            //expandido (visitado), não expandir mais            
             int visitados[V];
 
             // fila de prioridades de pair (distancia, vértice)
@@ -436,43 +435,36 @@ class GrafoWithDijkstraPriorQueue{
                         vector<pair<int, int> >, greater<pair<int, int> > > pq;
 
             // inicia o vetor de distâncias e visitados
-            for(int i = 0; i < V; i++)
-            {
+            for(int i = 0; i < V; i++){
                 dist[i] = INFINITY;
                 visitados[i] = false;
             }
 
-            // a distância de orig para orig é 0
-            dist[orig] = 0;
+            dist[orig] = 0; // a distância de orig para orig é 0
 
-            // insere na fila
-            pq.push(make_pair(dist[orig], orig));
+            pq.push(make_pair(dist[orig], orig)); // insere na fila
 
             // loop do algoritmo
-            while(!pq.empty())
-            {
+            while(!pq.empty()){
                 pair<int, int> p = pq.top(); // extrai o pair do topo
                 int u = p.second; // obtém o vértice do pair
                 pq.pop(); // remove da fila
 
                 // verifica se o vértice não foi expandido
-                if(visitados[u] == false)
-                {
+                if(visitados[u] == false){
                     // marca como visitado
                     visitados[u] = true;
 
                     list<pair<int, int> >::iterator it;
 
                     // percorre os vértices "v" adjacentes de "u"
-                    for(it = adj[u].begin(); it != adj[u].end(); it++)
-                    {
+                    for(it = adj[u].begin(); it != adj[u].end(); it++){
                         // obtém o vértice adjacente e o custo da aresta
                         int v = it->first;
                         int custo_aresta = it->second;
 
                         // relaxamento (u, v)
-                        if(dist[v] > (dist[u] + custo_aresta))
-                        {
+                        if(dist[v] > (dist[u] + custo_aresta)){
                             // atualiza a distância de "v" e insere na fila
                             dist[v] = dist[u] + custo_aresta;
                             pq.push(make_pair(dist[v], v));
@@ -487,226 +479,350 @@ class GrafoWithDijkstraPriorQueue{
 };
 
 
-class GrafoWithDijkstraPriorQueueMatrixAdj{
+class DijkstraPriorQueueMatrix{
     private:
         int V; // número de vértices
 
-        // ponteiro para um array contendo as listas de adjacências
-        list<pair<int, int> > * adj;
+        // ponteiro para um array contendo matriz de adjacência
         GraphM* graph;
     public:
-
-        // construtor
-        GrafoWithDijkstraPriorQueueMatrixAdj(int V)
-        {
+        DijkstraPriorQueueMatrix(int V){
             this->V = V; // atribui o número de vértices
-
-            /*
-                cria as listas onde cada lista é uma lista de pairs
-                onde cada pair é formado pelo vértice destino e o custo
-            */
-            adj = new list<pair<int, int> >[V];
             graph = new GraphM(V);
         }
 
         // adiciona uma aresta ao grafo de v1 à v2
-        void addAresta(int v1, int v2, int custo)
-        {
-            //adj[v1].push_back(make_pair(v2, custo));
+        void addAresta(int v1, int v2, int custo){
             graph->setEdge(v1, v2, custo);
         }
 
         // algoritmo de Dijkstra
-        int dijkstra(int orig, int dest)
-        {
-            // vetor de distâncias
-            int dist[V][V];
+        int dijkstra(int orig, int dest){
+            int dist[V]; // vetor de distâncias
 
-            /*
-            vetor de visitados serve para caso o vértice já tenha sido
-            expandido (visitado), não expandir mais
-            */
-            int visitados[V][V];
+            //vetor de visitados serve para caso o vértice já tenha sido
+            //expandido (visitado), não expandir mais
+            int visitados[V];
 
             // fila de prioridades de pair (distancia, vértice)
             priority_queue < pair<int, int>,
                         vector<pair<int, int> >, greater<pair<int, int> > > pq;
 
             // inicia o vetor de distâncias e visitados
-            for(int i = 0; i < V; i++)
-            {
-                for (int j=0; j < V; j++)
-                {
-                    dist[i][j] = INFINITY;
-                    visitados[i][j] = false;
-                }
+            for(int i = 0; i < V; i++){
+                dist[i] = INFINITY;
+                visitados[i] = false;
             }
 
             // a distância de orig para orig é 0
-            dist[orig][dest] = 0;
+            dist[orig] = 0;
 
             // insere na fila
-            pq.push(make_pair(dist[orig][dest], orig));
+            pq.push(make_pair(dist[orig], orig));
             
             // loop do algoritmo
-            while(!pq.empty())
-            {
+            while(!pq.empty()){
                 pair<int, int> p = pq.top(); // extrai o pair do topo
                 int u = p.second; // obtém o vértice do pair
                 pq.pop(); // remove da fila
 
                 // verifica se o vértice não foi expandido
-                for (int h=0; h<V; h++){
-                    if(visitados[u][h] == false)
-                    {
+                    if(visitados[u] == false){
                         // marca como visitado
-                        visitados[u][h] = true;
+                        visitados[u] = true;
 
                         //list<pair<int, int> >::iterator it;
 
                         // percorre os vértices "v" adjacentes de "u"
-                        //for(it = adj[u].begin(); it != adj[u].end(); it++)
-                        for (int l=0; l<V; l++)
-                        {
+                        for (int v = graph -> first(u); v < graph-> n(); v = graph -> next(u, v)){
                             // obtém o vértice adjacente e o custo da aresta
-                            int v = graph->first(u);
-                            int custo_aresta = graph->e();//it->second;
+                            int custo_aresta = graph -> weight(u, v);
 
                             // relaxamento (u, v)
-                            if(dist[v][l] > (dist[u][l] + custo_aresta))
-                            {
+                            if(dist[v] > (dist[u] + custo_aresta)){
                                 // atualiza a distância de "v" e insere na fila
-                                dist[v][l] = dist[u][l] + custo_aresta;
-                                pq.push(make_pair(dist[v][l], v));
+                                dist[v] = dist[u] + custo_aresta;
+                                pq.push(make_pair(dist[v], v));
                             }
                         }
-                    }
-                }
-                for (int i=0; i<V; i++){
-                    for (int j=0; j<V; j++){
-                        cout <<"-"<<dist[i][j]<<"-";
-                    }
-                    cout << endl;
                 }
             }
 
             // retorna a distância mínima até o destino
-            return dist[orig][dest];
+            return dist[dest];
         }
 };
 
-
-
 int main(){
-    cout << "Ola!" << endl;
-    //GraphM grafoM(4);
-    //cout << "final"<<endl;
+    DijkstraPriorQueueMatrix graphPriorMatrix(9);   //Adjacency matrix graph who uses 
+                                                    //dijkstra with priority queue method
+
+    DijkstraPriorQueueList graphPriorList(9);       //Adjacency list graph who uses 
+                                                    //dijkstra with priority queue method
+
+    GraphM graphTableMatrix(9);                     //Adjacency matrix graph who uses
+                                                    //dijkstra with table vertex method
+
+    GraphL graphTableList(9);                       //Adjacency list graph who uses
+                                                    //dijkstra with table vertex method
+
+    //The start vertex, the destination vertex, and an array 
+    //to store the distance of each vertex
+    int start = 0, destination = 4, array[9];
+
+
+    //Setting edges to make the graphs be sparse
+    graphPriorMatrix.addAresta(0, 7, 8);
+    graphPriorMatrix.addAresta(0, 1, 4);
+    graphPriorMatrix.addAresta(7, 6, 1);
+    graphPriorMatrix.addAresta(1, 7, 11);
+    graphPriorMatrix.addAresta(1, 2, 8);
+    graphPriorMatrix.addAresta(6, 5, 2);
+    graphPriorMatrix.addAresta(5, 3, 14);
+    graphPriorMatrix.addAresta(5, 4, 10);
+    graphPriorMatrix.addAresta(7, 8, 7);
+    graphPriorMatrix.addAresta(6, 8, 6);
+    graphPriorMatrix.addAresta(2, 3, 7);
+    graphPriorMatrix.addAresta(2, 5, 4);
+    graphPriorMatrix.addAresta(3, 4, 9);
+
+    graphPriorList.addAresta(0, 7, 8);
+    graphPriorList.addAresta(0, 1, 4);
+    graphPriorList.addAresta(7, 6, 1);
+    graphPriorList.addAresta(1, 7, 11);
+    graphPriorList.addAresta(1, 2, 8);
+    graphPriorList.addAresta(6, 5, 2);
+    graphPriorList.addAresta(5, 3, 14);
+    graphPriorList.addAresta(5, 4, 10);
+    graphPriorList.addAresta(7, 8, 7);
+    graphPriorList.addAresta(6, 8, 6);
+    graphPriorList.addAresta(2, 3, 7);
+    graphPriorList.addAresta(2, 5, 4);
+    graphPriorList.addAresta(3, 4, 9);
+
+    graphTableMatrix.setEdge(0, 7, 8);
+    graphTableMatrix.setEdge(0, 1, 4);
+    graphTableMatrix.setEdge(7, 6, 1);
+    graphTableMatrix.setEdge(1, 7, 11);
+    graphTableMatrix.setEdge(1, 2, 8);
+    graphTableMatrix.setEdge(6, 5, 2);
+    graphTableMatrix.setEdge(5, 3, 14);
+    graphTableMatrix.setEdge(5, 4, 10);
+    graphTableMatrix.setEdge(7, 8, 7);
+    graphTableMatrix.setEdge(6, 8, 6);
+    graphTableMatrix.setEdge(2, 3, 7);
+    graphTableMatrix.setEdge(2, 5, 4);
+    graphTableMatrix.setEdge(3, 4, 9);
     
-    GrafoWithDijkstraPriorQueueMatrixAdj graph(9);
-    graph.addAresta(0, 7, 8);
-    graph.addAresta(0, 1, 4);
-    graph.addAresta(7, 6, 1);
-    graph.addAresta(1, 7, 11);
-    graph.addAresta(1, 2, 8);
-    graph.addAresta(6, 5, 2);
-    graph.addAresta(5, 3, 14);
-    graph.addAresta(5, 4, 10);
-    graph.addAresta(7, 8, 7);
-    graph.addAresta(6, 8, 6);
-    graph.addAresta(2, 3, 7);
-    graph.addAresta(2, 5, 4);
-    graph.addAresta(3, 4, 9);
-    int start = 0, destination = 4;
-    cout << graph.dijkstra(start, destination) << endl;
+    graphTableList.setEdge(0, 7, 8);
+    graphTableList.setEdge(0, 1, 4);
+    graphTableList.setEdge(7, 6, 1);
+    graphTableList.setEdge(1, 7, 11);
+    graphTableList.setEdge(1, 2, 8);
+    graphTableList.setEdge(6, 5, 2);
+    graphTableList.setEdge(5, 3, 14);
+    graphTableList.setEdge(5, 4, 10);
+    graphTableList.setEdge(7, 8, 7);
+    graphTableList.setEdge(6, 8, 6);
+    graphTableList.setEdge(2, 3, 7);
+    graphTableList.setEdge(2, 5, 4);
+    graphTableList.setEdge(3, 4, 9);
 
-    // int opt = 1;
-    // while (opt!=0){
-    //     cout<<"1 - Test graph with matrix of adjacency."<<endl;
-    //     cout<<"2 - Test graph with list of adjacency."<<endl;
-    //     cout<<"3 - Test graph with matrix of adjacency and algorithm of Dijsktra."<<endl;
-    //     cout<<"4 - Test graph with list of adjacency and algorithm of Dijsktra."<<endl;
-    //     cout<<"5 - Test with graph sparse."<<endl;
-    //     cout<<"6 - Test with graph dense."<<endl;
-    //     cout<<"0 - Exit."<<endl;
-    //     cout << "Digit one option: ";
-    //     cin >> opt;
-    //     if (opt==1){
-    //         GraphM grafo_m(9);
+    //Testing
+    cout << "The minimum length from start to destination is: ";
+    auto begin = chrono::steady_clock::now();
+    cout << graphPriorMatrix.dijkstra(start, destination) << endl;
+    auto end = chrono::steady_clock::now();
 
-    //         grafo_m.setEdge(0, 7, 8);
-    //         grafo_m.setEdge(0, 1, 4);
-    //         grafo_m.setEdge(7, 6, 1);
-    //         grafo_m.setEdge(1, 7, 11);
-    //         grafo_m.setEdge(1, 2, 8);
-    //         grafo_m.setEdge(6, 5, 2);
-    //         grafo_m.setEdge(5, 3, 14);
-    //         grafo_m.setEdge(5, 4, 10);
-    //         grafo_m.setEdge(7, 8, 7);
-    //         grafo_m.setEdge(6, 8, 6);
-    //         grafo_m.setEdge(2, 3, 7);
-    //         grafo_m.setEdge(2, 5, 4);
-    //         grafo_m.setEdge(3, 4, 9);
+    cout << "Elapsed time in microseconds: "
+        << chrono::duration_cast<chrono::microseconds>(end - begin).count()
+        << " microsseconds" << endl << endl;
 
-    //         int array[9], start = 0, destination = 4;
-            
-    //         DijkstraList(&grafo_m, array, start, destination);
-    //         cout << endl;
-    //         for(int i = 0; i<9; i++){
-    //             cout << "Distance of vertex " << i << " to start vertex is: " << array[i] << endl;
-    //         }
 
-    //         cout << endl << "The minimum length from start to destination is: " << array[destination] << endl;
-    //     }
-    //     else if (opt==2){
-    //         GraphL grafoL(9);
-            
-    //         grafoL.setEdge(0, 7, 8);
-    //         grafoL.setEdge(0, 1, 4);
-    //         grafoL.setEdge(7, 6, 1);
-    //         grafoL.setEdge(1, 7, 11);
-    //         grafoL.setEdge(1, 2, 8);
-    //         grafoL.setEdge(6, 5, 2);
-    //         grafoL.setEdge(5, 3, 14);
-    //         grafoL.setEdge(5, 4, 10);
-    //         grafoL.setEdge(7, 8, 7);
-    //         grafoL.setEdge(6, 8, 6);
-    //         grafoL.setEdge(2, 3, 7);
-    //         grafoL.setEdge(2, 5, 4);
-    //         grafoL.setEdge(3, 4, 9);
+    cout << "The minimum length from start to destination is: ";
+    begin = chrono::steady_clock::now();
+    cout << graphPriorList.dijkstra(start, destination) << endl;
+    end = chrono::steady_clock::now();
 
-    //         int array[9], start = 0, destination = 4;
-            
-    //         DijkstraList(&grafoL, array, start, destination);
-    //         cout << endl;
-    //         for(int i = 0; i<9; i++){
-    //             cout << "Distance of vertex " << i << " to start vertex is: " << array[i] << endl;
-    //         }
+    cout << "Elapsed time in microseconds: "
+        << chrono::duration_cast<chrono::microseconds>(end - begin).count()
+        << " microsseconds" << endl;
 
-    //         cout << endl << "The minimum length from start to destination is: " << array[destination] << endl;
-    //     }
-    //     else if (opt==3){
-    //         GrafoWithDijkstraPriorQueue grafoLQ(9);
-            
-    //         grafoLQ.addAresta(0, 7, 8);
-    //         grafoLQ.addAresta(0, 1, 4);
-    //         grafoLQ.addAresta(7, 6, 1);
-    //         grafoLQ.addAresta(1, 7, 11);
-    //         grafoLQ.addAresta(1, 2, 8);
-    //         grafoLQ.addAresta(6, 5, 2);
-    //         grafoLQ.addAresta(5, 3, 14);
-    //         grafoLQ.addAresta(5, 4, 10);
-    //         grafoLQ.addAresta(7, 8, 7);
-    //         grafoLQ.addAresta(6, 8, 6);
-    //         grafoLQ.addAresta(2, 3, 7);
-    //         grafoLQ.addAresta(2, 5, 4);
-    //         grafoLQ.addAresta(3, 4, 9);
+    begin = chrono::steady_clock::now();            
+    DijkstraTable(&graphTableMatrix, array, start, destination);
+    end = chrono::steady_clock::now();
 
-    //         int start = 0, destination = 4;
-    //         int min = grafoLQ.dijkstra(start, destination);
-    //         cout << endl << "The minimum length from start to destination is: " << min << endl;
-    //     }
-    // }
+    cout << endl << "The minimum length from start to destination is: ";
+    cout << array[destination] << endl;
 
+    cout << "Elapsed time in microseconds: "
+        << chrono::duration_cast<chrono::microseconds>(end - begin).count()
+        << " microsseconds" << endl;
+
+    //Reseting the array to use it again
+    for(int i = 0; i < 9; i++){
+        array[i] = 0;
+    }
+
+    begin = chrono::steady_clock::now();            
+    DijkstraTable(&graphTableList, array, start, destination);
+    end = chrono::steady_clock::now();
+
+    cout << endl << "The minimum length from start to destination is: ";
+    cout << array[destination] << endl;
+
+    cout << "Elapsed time in microseconds: "
+        << chrono::duration_cast<chrono::microseconds>(end - begin).count()
+        << " microsseconds" << endl;
+
+    //Reseting the array to use it again
+    for(int i = 0; i < 9; i++){
+        array[i] = 0;
+    }
+
+    //Setting edges to make the graphs be dense
+    graphPriorMatrix.addAresta(0, 7, 8);
+    graphPriorMatrix.addAresta(0, 1, 4);
+    graphPriorMatrix.addAresta(0, 8, 1);
+    graphPriorMatrix.addAresta(1, 7, 11);
+    graphPriorMatrix.addAresta(1, 2, 8);
+    graphPriorMatrix.addAresta(1, 8, 5);
+    graphPriorMatrix.addAresta(1, 6, 12);
+    graphPriorMatrix.addAresta(2, 3, 7);
+    graphPriorMatrix.addAresta(2, 5, 4);
+    graphPriorMatrix.addAresta(2, 8, 2);
+    graphPriorMatrix.addAresta(3, 4, 9);
+    graphPriorMatrix.addAresta(5, 3, 14);
+    graphPriorMatrix.addAresta(5, 4, 10);
+    graphPriorMatrix.addAresta(6, 5, 2);
+    graphPriorMatrix.addAresta(6, 8, 6);
+    graphPriorMatrix.addAresta(6, 2, 1);
+    graphPriorMatrix.addAresta(6, 3, 3);
+    graphPriorMatrix.addAresta(7, 6, 1);
+    graphPriorMatrix.addAresta(7, 5, 5);
+    graphPriorMatrix.addAresta(7, 8, 7);
+    graphPriorMatrix.addAresta(8, 6, 6);
+    graphPriorMatrix.addAresta(8, 3, 7);
+    graphPriorMatrix.addAresta(8, 5, 14);
+
+    graphPriorList.addAresta(0, 7, 8);
+    graphPriorList.addAresta(0, 1, 4);
+    graphPriorList.addAresta(0, 8, 1);
+    graphPriorList.addAresta(1, 7, 11);
+    graphPriorList.addAresta(1, 2, 8);
+    graphPriorList.addAresta(1, 8, 5);
+    graphPriorList.addAresta(1, 6, 12);
+    graphPriorList.addAresta(2, 3, 7);
+    graphPriorList.addAresta(2, 5, 4);
+    graphPriorList.addAresta(2, 8, 2);
+    graphPriorList.addAresta(3, 4, 9);
+    graphPriorList.addAresta(5, 3, 14);
+    graphPriorList.addAresta(5, 4, 10);
+    graphPriorList.addAresta(6, 5, 2);
+    graphPriorList.addAresta(6, 8, 6);
+    graphPriorList.addAresta(6, 2, 1);
+    graphPriorList.addAresta(6, 3, 3);
+    graphPriorList.addAresta(7, 6, 1);
+    graphPriorList.addAresta(7, 5, 5);
+    graphPriorList.addAresta(7, 8, 7);
+    graphPriorList.addAresta(8, 6, 6);
+    graphPriorList.addAresta(8, 3, 7);
+    graphPriorList.addAresta(8, 5, 14);
+
+    graphTableMatrix.setEdge(0, 7, 8);
+    graphTableMatrix.setEdge(0, 1, 4);
+    graphTableMatrix.setEdge(0, 8, 1);
+    graphTableMatrix.setEdge(1, 7, 11);
+    graphTableMatrix.setEdge(1, 2, 8);
+    graphTableMatrix.setEdge(1, 8, 5);
+    graphTableMatrix.setEdge(1, 6, 12);
+    graphTableMatrix.setEdge(2, 3, 7);
+    graphTableMatrix.setEdge(2, 5, 4);
+    graphTableMatrix.setEdge(2, 8, 2);
+    graphTableMatrix.setEdge(3, 4, 9);
+    graphTableMatrix.setEdge(5, 3, 14);
+    graphTableMatrix.setEdge(5, 4, 10);
+    graphTableMatrix.setEdge(6, 5, 2);
+    graphTableMatrix.setEdge(6, 8, 6);
+    graphTableMatrix.setEdge(6, 2, 1);
+    graphTableMatrix.setEdge(6, 3, 3);
+    graphTableMatrix.setEdge(7, 6, 1);
+    graphTableMatrix.setEdge(7, 5, 5);
+    graphTableMatrix.setEdge(7, 8, 7);
+    graphTableMatrix.setEdge(8, 6, 6);
+    graphTableMatrix.setEdge(8, 3, 7);
+    graphTableMatrix.setEdge(8, 5, 14);
+
+    graphTableList.setEdge(0, 7, 8);
+    graphTableList.setEdge(0, 1, 4);
+    graphTableList.setEdge(0, 8, 1);
+    graphTableList.setEdge(1, 7, 11);
+    graphTableList.setEdge(1, 2, 8);
+    graphTableList.setEdge(1, 8, 5);
+    graphTableList.setEdge(1, 6, 12);
+    graphTableList.setEdge(2, 3, 7);
+    graphTableList.setEdge(2, 5, 4);
+    graphTableList.setEdge(2, 8, 2);
+    graphTableList.setEdge(3, 4, 9);
+    graphTableList.setEdge(5, 3, 14);
+    graphTableList.setEdge(5, 4, 10);
+    graphTableList.setEdge(6, 5, 2);
+    graphTableList.setEdge(6, 8, 6);
+    graphTableList.setEdge(6, 2, 1);
+    graphTableList.setEdge(6, 3, 3);
+    graphTableList.setEdge(7, 6, 1);
+    graphTableList.setEdge(7, 5, 5);
+    graphTableList.setEdge(7, 8, 7);
+    graphTableList.setEdge(8, 6, 6);
+    graphTableList.setEdge(8, 3, 7);
+    graphTableList.setEdge(8, 5, 14);
+
+    //Testing with dense graph
+    cout << endl << "The minimum length from start to destination is: ";
+    begin = chrono::steady_clock::now();
+    cout << graphPriorMatrix.dijkstra(start, destination) << endl;
+    end = chrono::steady_clock::now();
+
+    cout << "Elapsed time in microseconds: "
+        << chrono::duration_cast<chrono::microseconds>(end - begin).count()
+        << " microsseconds" << endl << endl;
+
+
+    cout << "The minimum length from start to destination is: ";
+    begin = chrono::steady_clock::now();
+    cout << graphPriorList.dijkstra(start, destination) << endl;
+    end = chrono::steady_clock::now();
+
+    cout << "Elapsed time in microseconds: "
+        << chrono::duration_cast<chrono::microseconds>(end - begin).count()
+        << " microsseconds" << endl;
+
+    begin = chrono::steady_clock::now();            
+    DijkstraTable(&graphTableMatrix, array, start, destination);
+    end = chrono::steady_clock::now();
+
+    cout << endl << "The minimum length from start to destination is: ";
+    cout << array[destination] << endl;
+
+    cout << "Elapsed time in microseconds: "
+        << chrono::duration_cast<chrono::microseconds>(end - begin).count()
+        << " microsseconds" << endl;
+
+    //Reseting the array to use it again
+    for(int i = 0; i < 9; i++){
+        array[i] = 0;
+    }
+
+    begin = chrono::steady_clock::now();            
+    DijkstraTable(&graphTableList, array, start, destination);
+    end = chrono::steady_clock::now();
+
+    cout << endl << "The minimum length from start to destination is: ";
+    cout << array[destination] << endl;
+
+    cout << "Elapsed time in microseconds: "
+        << chrono::duration_cast<chrono::microseconds>(end - begin).count()
+        << " microsseconds" << endl;
 
     return 0;
 }
